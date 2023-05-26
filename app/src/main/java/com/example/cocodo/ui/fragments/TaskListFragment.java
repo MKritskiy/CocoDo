@@ -15,7 +15,7 @@ import com.example.cocodo.R;
 
 public class TaskListFragment extends Fragment {
     public interface UpdaterRecViewList{
-        void updateRevView();
+        void updateTaskRecView();
         void closeButtonClickListener();
     }
     private TaskListFragment.UpdaterRecViewList updaterRecViewList;
@@ -47,6 +47,6 @@ public class TaskListFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        updaterRecViewList.updateRevView();
+        updaterRecViewList.updateTaskRecView();
     }
 }

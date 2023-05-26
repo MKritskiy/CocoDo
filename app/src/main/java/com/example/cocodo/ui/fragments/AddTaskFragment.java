@@ -38,6 +38,7 @@ public class AddTaskFragment
 
     public interface OnFragmentButtonClickListener{
         void sendTaskButtonClick(String taskName, String taskDescription, String taskTime);
+        void sendSubTaskButtonClick(int taskId, String subTaskName, String subTaskDescription, String subTaskTime);
     }
 
 
@@ -93,7 +94,7 @@ public class AddTaskFragment
         priorityButton = rootView.findViewById(R.id.priority_button);
         reminderButton = rootView.findViewById(R.id.remind_button);
         sendButton = rootView.findViewById(R.id.send_button);
-
+        boolean isSubTask = getArguments().getBoolean("isSubTask");
         deadlineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -118,7 +119,10 @@ public class AddTaskFragment
                 int priority = 0; // Пока не реализовано
                 boolean hasReminder = false; // Пока не реализовано
                 if (!taskNameEditText.getText().toString().isEmpty()){
-                    fragmentButtonClickListener.sendTaskButtonClick(taskName, description, deadline);
+                    if (!isSubTask)
+                        fragmentButtonClickListener.sendTaskButtonClick(taskName, description, deadline);
+                    else
+                        fragmentButtonClickListener.sendSubTaskButtonClick(getArguments().getInt("taskId"), taskName, description, deadline);
                     onPause();
                 }
             }
