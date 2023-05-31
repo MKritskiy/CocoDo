@@ -21,6 +21,7 @@ import com.example.cocodo.ui.fragments.BackgroundFragment;
 import com.example.cocodo.ui.fragments.DetailsTaskFragment;
 import com.example.cocodo.ui.fragments.NavBarFragment;
 import com.example.cocodo.ui.fragments.TaskListFragment;
+import com.example.cocodo.utils.RecyclerSubTaskListAdapter;
 import com.example.cocodo.utils.RecyclerTaskListAdapter;
 import com.example.cocodo.utils.SpacesItemDecoration;
 import com.example.cocodo.utils.SubTask;
@@ -80,7 +81,8 @@ public class MainActivity
         protected Void doInBackground(Void... voids) {
             if (task!=null) {
                 MyDatabase.getDatabase(context).taskDao().insertTask(task);
-                taskList.add(task);
+                Task newTask = MyDatabase.getDatabase(context).taskDao().getLastInsertedTask();
+                taskList.add(newTask);
             } else {
                 MainActivity.taskList = MyDatabase.getDatabase(context).taskDao().getAllUnchecked();
 //               for (Task t:taskList) {
@@ -199,13 +201,8 @@ public class MainActivity
     @Override
     public void sendSubTaskButtonClick(int taskId, String subTaskName, String subTaskDescription, String subTaskTime) {
         Log.i("TAG", String.valueOf(taskId) + " "+ subTaskName );
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                MyDatabase.getDatabase(getApplicationContext()).taskDao().
-                        insertSubTask(new SubTask(taskId, subTaskName, subTaskDescription, subTaskTime));
-            }
-        }).start();
+        DetailsTaskFragment fragment =  (DetailsTaskFragment) fragmentManager.findFragmentByTag("TaskDetailsFragment");
+        fragment.addSubTask(taskId, subTaskName, subTaskDescription, subTaskTime);
     }
 
     @Override

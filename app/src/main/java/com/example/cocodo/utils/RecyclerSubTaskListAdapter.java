@@ -2,10 +2,12 @@ package com.example.cocodo.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocodo.R;
 import com.example.cocodo.database.TaskDao;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
@@ -20,6 +23,8 @@ public class RecyclerSubTaskListAdapter extends RecyclerView.Adapter<RecyclerSub
     private final LayoutInflater inflater;
     private final List<SubTask> subTaskList;
     private final Context mContext;
+    private final RecyclerView recyclerView;
+
 
     private OnItemClickListener listener;
 
@@ -35,10 +40,12 @@ public class RecyclerSubTaskListAdapter extends RecyclerView.Adapter<RecyclerSub
 
     TaskDao taskDao;
 
-    public RecyclerSubTaskListAdapter(Context context, List<SubTask> subTaskList) {
+    public RecyclerSubTaskListAdapter(Context context, List<SubTask> subTaskList, RecyclerView recyclerView, TaskDao taskDao) {
         this.mContext = context;
         this.subTaskList = subTaskList;
         this.inflater = LayoutInflater.from(context);
+        this.recyclerView = recyclerView;
+        this.taskDao = taskDao;
     }
 
     @NonNull
@@ -69,13 +76,75 @@ public class RecyclerSubTaskListAdapter extends RecyclerView.Adapter<RecyclerSub
         holder.textTimeView.setVisibility(isVisible ? View.VISIBLE : View.GONE);
 
         holder.checkBox.setChecked(subTask.getIsCompleted() > 0);
+        if (holder.getAdapterPosition() >= 0) {
+            SubTask currentTask = subTaskList.get(holder.getAdapterPosition());
+            holder.checkBox.setOnCheckedChangeListener(createCheckedChangeListener(holder, currentTask));
+        }
     }
 
     private void setupNameAndTimeText(ViewHolder holder, SubTask subTask) {
         holder.textNameView.setText(subTask.getSubTaskName());
         holder.textTimeView.setText(subTask.getSubTaskTime());
     }
+    private CompoundButton.OnCheckedChangeListener createCheckedChangeListener(RecyclerSubTaskListAdapter.ViewHolder holder, SubTask currentTask) {
+        return new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                currentTask.setIsCompleted(0);
+                int pos = holder.getAdapterPosition();
+                if (isChecked && pos >= 0) {
+                    SubTask task = subTaskList.get(pos);
+                    if (task.equals(currentTask)) {
+                        completeTask(pos, task, holder, isChecked);
+                    }
+                }
+            }
+        };
+    }
 
+    private void completeTask(int pos, SubTask task, RecyclerSubTaskListAdapter.ViewHolder holder, boolean isChecked) {
+        task.setIsCompleted(1);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (task.getIsCompleted() == 1 && pos < subTaskList.size() && task.equals(subTaskList.get(pos))) {
+                    SubTask removedTask = subTaskList.remove(pos);
+                    int completed = isChecked ? 1 : 0;
+                    removedTask.setIsCompleted(completed);
+                    updateTask(removedTask);
+                    notifyItemRemoved(pos);
+                    showSnackbar(removedTask, pos, holder);
+                }
+            }
+        }, 500);
+    }
+
+    private void updateTask(SubTask removedTask) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                taskDao.updateSubTask(removedTask);
+            }
+        }).start();
+    }
+
+    private void showSnackbar(SubTask removedTask, int pos, RecyclerSubTaskListAdapter.ViewHolder holder) {
+        String undoText = "Отменить";
+
+        View.OnClickListener undoClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                subTaskList.add(pos, removedTask);
+                notifyItemInserted(pos);
+                removedTask.setIsCompleted(0);
+                updateTask(removedTask);
+                holder.checkBox.setChecked(false);
+            }
+        };
+
+        Snackbar snackbar = Snackbar.make(recyclerView, "Выполнено", Snackbar.LENGTH_LONG);
+        snackbar.setAction(undoText, undoClickListener).show();
+    }
 
     @Override
     public int getItemCount() {

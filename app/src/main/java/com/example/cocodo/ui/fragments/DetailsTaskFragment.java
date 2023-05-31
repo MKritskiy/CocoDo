@@ -77,7 +77,7 @@ public class DetailsTaskFragment extends DialogFragment
 
     private static List<SubTask> subTaskList;
     private static RecyclerView recyclerView;
-    private static RecyclerSubTaskListAdapter adapter;
+    public static RecyclerSubTaskListAdapter adapter;
 
     @NonNull
     @Override
@@ -106,39 +106,57 @@ public class DetailsTaskFragment extends DialogFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.task_details_fragment, container, false);
-        Context context = getContext();
         taskId = getArguments().getInt("taskId");
         recyclerView = rootView.findViewById(R.id.recycler_view_details_subtasks);
+        Log.d("TAG", String.valueOf(taskId));
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Log.d("PUCK", String.valueOf(MyDatabase.getDatabase(context).taskDao().getAllSubTasks(taskId).size()));
-                subTaskList = MyDatabase.getDatabase(context).taskDao().getAllSubTasks(taskId);
-                if (subTaskList.size()>0)
-                {
-                    adapter = new RecyclerSubTaskListAdapter(context, subTaskList);
-                    recyclerView.setAdapter(adapter);
-                }
-                Log.d("TAG", "Sub-task list size: " + subTaskList.size()+ "taskId: "+ taskId);
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d("TAG", "All logs printed");
-                    }
-                });
+                updateRecyclerView();
             }
         }).start();
-
 
         addButton = (Button) rootView.findViewById(R.id.button_details_add_subtask);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 fragmentButtonClickListener.addTaskButtonClick(getArguments().getInt("taskId"));
+
             }
         });
         return rootView;
+    }
+
+    public void updateRecyclerView(){
+        Context context = getContext();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                subTaskList = MyDatabase.getDatabase(context).taskDao().getAllUncheckedSubTasks(taskId);
+                    adapter = new RecyclerSubTaskListAdapter(context, subTaskList, recyclerView, MyDatabase.getDatabase(context).taskDao());
+                    recyclerView.setAdapter(adapter);
+
+            }
+        }).start();
+    }
+    public void addSubTask(int taskId, String subTaskName, String subTaskDescription, String subTaskTime){
+        if (adapter==null){
+            updateRecyclerView();
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SubTask newSubTask = new SubTask(
+                        taskId,
+                        subTaskName,
+                        subTaskDescription,
+                        subTaskTime);
+                MyDatabase.getDatabase(getContext()).taskDao().
+                        insertSubTask(newSubTask);
+                subTaskList.add(newSubTask);
+            }
+        }).start();
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -166,7 +184,7 @@ public class DetailsTaskFragment extends DialogFragment
     @Override
     public void onPause() {
         super.onPause();
-
+        Log.i("TAG", "onPause: ");
         dismiss();
         getParentFragmentManager().beginTransaction().remove(getParentFragmentManager().findFragmentById(android.R.id.content)).commit();
 

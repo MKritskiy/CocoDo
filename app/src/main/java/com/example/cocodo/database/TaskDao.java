@@ -21,6 +21,9 @@ public interface TaskDao {
     @Insert
     void insertTask(Task task);
 
+    @Query("SELECT * FROM tasks ORDER BY id DESC LIMIT 1")
+    Task getLastInsertedTask();
+
     @Update
     void update(Task task);
 
@@ -41,5 +44,6 @@ public interface TaskDao {
 
     @Query("SELECT * FROM subtasks WHERE task_id = :taskId")
     List<SubTask> getAllSubTasks(int taskId);
-
+    @Query("SELECT * FROM subtasks WHERE task_id=:taskId AND isCompleted = 0")
+    List<SubTask> getAllUncheckedSubTasks(int taskId);
 }
