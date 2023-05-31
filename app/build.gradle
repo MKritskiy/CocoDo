@@ -4,11 +4,10 @@ plugins {
 
 android {
     namespace 'com.example.cocodo'
-    compileSdk 33
-
+    compileSdkVersion 33
     defaultConfig {
         applicationId "com.example.cocodo"
-        minSdk 26
+        minSdk 29
         targetSdk 33
         versionCode 1
         versionName "1.0"

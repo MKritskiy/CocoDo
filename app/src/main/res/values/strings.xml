@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Cocodo</string>
+    <string-array name="priority_choices">
+        <item>Приоритет 1</item>
+        <item>Приоритет 2</item>
+        <item>Приоритет 3</item>
+        <item>Приоритет 4</item>
+    </string-array>
 </resources>

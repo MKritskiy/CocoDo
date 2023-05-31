@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/priority_1"
+        android:icon="@drawable/flag_empty"
+        android:iconTint="#F44336"
+        android:iconTintMode="src_in"
+        android:title="Red" />
+    <item
+        android:id="@+id/priority_2"
+        android:icon="@drawable/flag_empty"
+        android:iconTint="#FFEB3B"
+        android:iconTintMode="src_in"
+        android:title="Yellow" />
+    <item
+        android:id="@+id/Priority_3"
+        android:icon="@drawable/flag_empty"
+        android:iconTint="#4CAF50"
+        android:iconTintMode="src_in"
+        android:title="Green" />
+</menu>

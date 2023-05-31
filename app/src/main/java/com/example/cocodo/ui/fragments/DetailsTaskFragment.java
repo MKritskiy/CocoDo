@@ -15,13 +15,19 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupMenu;
+import android.widget.Spinner;
 import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
@@ -49,7 +55,7 @@ public class DetailsTaskFragment extends DialogFragment
 
     public interface OnFragmentButtonClickListener{
         void addTaskButtonClick(int taskId);
-
+        void priorityButtonClick(View view);
     }
 
     private DetailsTaskFragment.OnFragmentButtonClickListener fragmentButtonClickListener;
@@ -115,13 +121,27 @@ public class DetailsTaskFragment extends DialogFragment
                 updateRecyclerView();
             }
         }).start();
+        LinearLayout priorityLayout = (LinearLayout) rootView.findViewById(R.id.task_details_priority_layout);
+        priorityLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fragmentButtonClickListener.priorityButtonClick(rootView);
+            }
+        });
+        priorityButton = (Button) rootView.findViewById(R.id.details_priority_button);
+        priorityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fragmentButtonClickListener.priorityButtonClick(rootView);
+
+            }
+        });
 
         addButton = (Button) rootView.findViewById(R.id.button_details_add_subtask);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 fragmentButtonClickListener.addTaskButtonClick(getArguments().getInt("taskId"));
-
             }
         });
         return rootView;

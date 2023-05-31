@@ -10,10 +10,22 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.example.cocodo.database.MyDatabase;
 import com.example.cocodo.ui.fragments.AddTaskFragment;
@@ -21,12 +33,9 @@ import com.example.cocodo.ui.fragments.BackgroundFragment;
 import com.example.cocodo.ui.fragments.DetailsTaskFragment;
 import com.example.cocodo.ui.fragments.NavBarFragment;
 import com.example.cocodo.ui.fragments.TaskListFragment;
-import com.example.cocodo.utils.RecyclerSubTaskListAdapter;
 import com.example.cocodo.utils.RecyclerTaskListAdapter;
 import com.example.cocodo.utils.SpacesItemDecoration;
-import com.example.cocodo.utils.SubTask;
 import com.example.cocodo.utils.Task;
-import com.example.cocodo.utils.TempAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -190,6 +199,38 @@ public class MainActivity
                 .commit();
         // Показываем фрагмент с помощью менеджера фрагментов
         fragment.show(fragmentManager, "AddTaskFragment");
+    }
+
+    @Override
+    public void priorityButtonClick(View view) {
+        PopupWindow popupWindow = new PopupWindow(view);
+
+        // Загрузка элемента LinearLayout из макета
+        View layout = getLayoutInflater().inflate(R.layout.popup_window, null);
+
+        // Установка размера Popup window
+        popupWindow.setContentView(layout);
+        popupWindow.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+        popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        popupWindow.setFocusable(true);
+        Button[] buttons = new Button[]{findViewById(R.id.button1), findViewById(R.id.button2), findViewById(R.id.button3)};
+
+
+        // Создаем слушатель кнопок при помощи лямбда-выражений
+        View.OnClickListener clickListener = v -> {
+            int buttonIndex = (int) v.getTag(); // Получаем индекс кнопки из тега
+            // Действия при нажатии на кнопку; здесь можно использовать buttonIndex для определения нажатой кнопки
+        };
+
+        // Присваиваем слушатель всем кнопкам
+        for (int i = 0; i < buttons.length; i++) {
+            buttons[i].setTag(i); // Присваиваем тег кнопки (индекс в массиве)
+            buttons[i].setOnClickListener(clickListener);
+        }
+
+
+        popupWindow.showAtLocation(view, Gravity.CENTER | Gravity.BOTTOM, 0, 0);
     }
 
     @Override

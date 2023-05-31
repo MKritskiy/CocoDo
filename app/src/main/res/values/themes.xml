@@ -12,6 +12,6 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/coco_red</item>
         <!-- Customize your theme here. -->
-
+        <item name="android:overlapAnchor">true</item>
     </style>
 </resources>
