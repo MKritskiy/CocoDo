@@ -28,6 +28,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
@@ -78,7 +79,7 @@ public class DetailsTaskFragment extends DialogFragment
     private static int taskId;
     int dayFinal, monthFinal, yearFinal, hourFinal, minuteFinal;
 
-    private String taskName, description, deadline, priority;
+    private String taskName, description, deadline, priority_text;
     String[] monthNames = new DateFormatSymbols(new Locale("ru")).getShortMonths();
 
     private static List<SubTask> subTaskList;
@@ -177,6 +178,11 @@ public class DetailsTaskFragment extends DialogFragment
             }
         }).start();
         adapter.notifyDataSetChanged();
+    }
+
+    public void setPriority(int priority) {
+        TextView text_priority = getView().findViewById(R.id.text_details_priority);
+        text_priority.setText("Приоритет " + String.valueOf(priority));
     }
 
     @Override

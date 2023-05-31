@@ -2,95 +2,142 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/popup_menu"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white"
-    android:gravity="center_horizontal"
+    android:gravity="bottom"
     android:orientation="vertical"
     android:padding="16dp">
 
     <LinearLayout
-        android:id="@+id/option1"
+        android:id="@+id/options"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/rounded_corners"
+        android:backgroundTint="#FFFFFF"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/option1_image"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/option1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/flag_empty" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp">
 
-        <TextView
-            android:id="@+id/option1_text"
-            android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/option1_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/flag_empty" />
+
+            <TextView
+                android:id="@+id/option1_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter"
+                android:text="Приоритет 1"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/option2"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Приоритет 1" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/option2_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/flag_empty" />
+
+            <TextView
+                android:id="@+id/option2_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter"
+                android:text="Приоритет 2"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/option3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/option3_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/flag_empty" />
+
+            <TextView
+                android:id="@+id/option3_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter"
+                android:text="Приоритет 3"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/option4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/option4_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/flag_empty" />
+
+            <TextView
+                android:id="@+id/option4_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter"
+                android:text="Приоритет 4"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/option2"
+        android:id="@+id/cancel"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/option2_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/flag_empty" />
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_corners"
+        android:backgroundTint="#FFFFFF"
+        android:orientation="horizontal"
+        android:padding="12dp">
 
         <TextView
-            android:id="@+id/option2_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Приоритет 2" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/option3"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/option3_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/flag_empty" />
-
-        <TextView
-            android:id="@+id/option3_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Приоритет 3" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/option4"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/option4_image"
+            android:id="@+id/cancel_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/flag_empty" />
-
-        <TextView
-            android:id="@+id/option4_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Приоритет 3" />
+            android:fontFamily="@font/inter_semibold"
+            android:text="Отмена"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
     </LinearLayout>
 
 </LinearLayout>

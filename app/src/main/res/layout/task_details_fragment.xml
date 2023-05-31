@@ -175,6 +175,7 @@
                 android:id="@+id/priority_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:clickable="false"
                 app:srcCompat="@drawable/flag_red" />
 
             <TextView
@@ -182,8 +183,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
+                android:clickable="false"
                 android:fontFamily="@font/inter"
-                android:onClick="onPriorityClicked"
                 android:text="Приоритет задачи"
                 android:textColor="@color/black"
                 android:textSize="14sp" />

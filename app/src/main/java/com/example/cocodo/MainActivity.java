@@ -10,6 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -19,12 +20,15 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.cocodo.database.MyDatabase;
@@ -204,33 +208,33 @@ public class MainActivity
     @Override
     public void priorityButtonClick(View view) {
         PopupWindow popupWindow = new PopupWindow(view);
-
         // Загрузка элемента LinearLayout из макета
         View layout = getLayoutInflater().inflate(R.layout.popup_window, null);
-
         // Установка размера Popup window
         popupWindow.setContentView(layout);
-        popupWindow.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
-        popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-        popupWindow.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        popupWindow.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
+        popupWindow.setHeight(WindowManager.LayoutParams.MATCH_PARENT);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.argb(128, 0, 0, 0)));
         popupWindow.setFocusable(true);
-        Button[] buttons = new Button[]{findViewById(R.id.button1), findViewById(R.id.button2), findViewById(R.id.button3)};
-
-
-        // Создаем слушатель кнопок при помощи лямбда-выражений
-        View.OnClickListener clickListener = v -> {
-            int buttonIndex = (int) v.getTag(); // Получаем индекс кнопки из тега
-            // Действия при нажатии на кнопку; здесь можно использовать buttonIndex для определения нажатой кнопки
-        };
-
-        // Присваиваем слушатель всем кнопкам
-        for (int i = 0; i < buttons.length; i++) {
-            buttons[i].setTag(i); // Присваиваем тег кнопки (индекс в массиве)
-            buttons[i].setOnClickListener(clickListener);
-        }
-
-
+        layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupWindow.dismiss();
+            }
+        });
         popupWindow.showAtLocation(view, Gravity.CENTER | Gravity.BOTTOM, 0, 0);
+        LinearLayout[] layouts = new LinearLayout[]{layout.findViewById(R.id.option1), layout.findViewById(R.id.option2), layout.findViewById(R.id.option3), layout.findViewById(R.id.option4)};
+        for (int i = 0; i < layouts.length; i++) {
+            int finalI = i;
+            layouts[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DetailsTaskFragment fragment =  (DetailsTaskFragment) fragmentManager.findFragmentByTag("TaskDetailsFragment");
+                    fragment.setPriority(finalI+1);
+                    popupWindow.dismiss();
+                }
+            });
+        }
     }
 
     @Override
