@@ -31,6 +31,7 @@ public class Task {
         this.taskName = taskName;
         this.taskDesc = taskDesc;
         this.taskTime = taskTime;
+        this.taskPriority = 4;
         this.isCompleted = 0;
     }
 

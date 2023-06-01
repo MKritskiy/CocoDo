@@ -12,4 +12,5 @@
     <color name="checked_color">#CA2727</color>
     <color name="unchecked_color">#FF000000</color>
     <color name="green">#4C8D47</color>
+    <color name="blue">#255399</color>
 </resources>

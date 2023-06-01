@@ -29,7 +29,7 @@
                 android:id="@+id/option1_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/flag_empty" />
+                android:src="@drawable/flag_red" />
 
             <TextView
                 android:id="@+id/option1_text"
@@ -54,7 +54,7 @@
                 android:id="@+id/option2_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/flag_empty" />
+                android:src="@drawable/flag_green" />
 
             <TextView
                 android:id="@+id/option2_text"
@@ -79,7 +79,7 @@
                 android:id="@+id/option3_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/flag_empty" />
+                android:src="@drawable/flag_blue" />
 
             <TextView
                 android:id="@+id/option3_text"

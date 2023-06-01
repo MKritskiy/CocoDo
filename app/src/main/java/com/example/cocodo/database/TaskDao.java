@@ -3,10 +3,12 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Transaction;
 import androidx.room.Update;
 
 import com.example.cocodo.utils.SubTask;
 import com.example.cocodo.utils.Task;
+import com.example.cocodo.utils.TaskWithSubTasks;
 
 import java.util.List;
 
@@ -17,7 +19,8 @@ public interface TaskDao {
     List<Task> getAll();
     @Query("SELECT * FROM tasks WHERE isCompleted = 0")
     List<Task> getAllUnchecked();
-
+    @Query("SELECT * FROM tasks WHERE isCompleted = 0 ORDER BY task_priority ASC ")
+    List<Task> getAllUncheckedTasksSortedByPriority();
     @Insert
     void insertTask(Task task);
 
@@ -46,4 +49,8 @@ public interface TaskDao {
     List<SubTask> getAllSubTasks(int taskId);
     @Query("SELECT * FROM subtasks WHERE task_id=:taskId AND isCompleted = 0")
     List<SubTask> getAllUncheckedSubTasks(int taskId);
+
+    @Query("SELECT * FROM tasks WHERE id = :taskId")
+    Task getTaskById(int taskId);
+
 }

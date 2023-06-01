@@ -2,6 +2,7 @@ package com.example.cocodo.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocodo.R;
@@ -66,8 +68,8 @@ public class RecyclerTaskListAdapter extends RecyclerView.Adapter<RecyclerTaskLi
                 }
             }
         });
-
         Task task = taskList.get(position);
+        holder.setPriorityImage(task.getTaskPriority());
 
         setupNameAndTimeText(holder, task);
 
@@ -161,6 +163,22 @@ public class RecyclerTaskListAdapter extends RecyclerView.Adapter<RecyclerTaskLi
             textNameView = view.findViewById(R.id.task_name);
             textTimeView = view.findViewById(R.id.task_time);
             checkBox = view.findViewById(R.id.task_completing);
+        }
+        public void setPriorityImage(int priority){
+            switch (priority){
+                case 1:
+                    checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(checkBox.getContext().getApplicationContext(), R.color.coco_red)));
+                    break;
+                case 2:
+                    checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(checkBox.getContext().getApplicationContext(), R.color.green)));
+                    break;
+                case 3:
+                    checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(checkBox.getContext().getApplicationContext(), R.color.blue)));
+                    break;
+                default:
+                    checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(checkBox.getContext().getApplicationContext(), R.color.black)));
+                    break;
+            }
         }
     }
 

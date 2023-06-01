@@ -1,11 +1,11 @@
 package com.example.cocodo.ui.fragments;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -19,40 +19,34 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.work.Data;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.Operation;
-import androidx.work.WorkInfo;
-import androidx.work.WorkManager;
-import androidx.work.WorkRequest;
-import androidx.work.Worker;
-import androidx.work.WorkerParameters;
 
 import com.example.cocodo.R;
 import com.example.cocodo.database.MyDatabase;
 import com.example.cocodo.utils.RecyclerSubTaskListAdapter;
 import com.example.cocodo.utils.SpacesItemDecoration;
 import com.example.cocodo.utils.SubTask;
-import com.google.common.util.concurrent.ListenableFuture;
+import com.example.cocodo.utils.Task;
 
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class DetailsTaskFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener,
@@ -61,6 +55,7 @@ public class DetailsTaskFragment extends DialogFragment
     public interface OnFragmentButtonClickListener{
         void addTaskButtonClick(int taskId);
         void priorityButtonClick(View view);
+        void updateTaskRecView();
     }
 
     private DetailsTaskFragment.OnFragmentButtonClickListener fragmentButtonClickListener;
@@ -78,7 +73,12 @@ public class DetailsTaskFragment extends DialogFragment
 
 
     private EditText taskNameEditText, descriptionEditText;
+    private  TextView priority_textView;
     private Button deadlineButton, priorityButton, reminderButton, addButton, closeButton;
+    private LinearLayout priorityLayout;
+    private CheckBox checkBox;
+    ImageView priority_image;
+
     private int day, month, year, hour, minute;
     private static int taskId;
     int dayFinal, monthFinal, yearFinal, hourFinal, minuteFinal;
@@ -87,6 +87,7 @@ public class DetailsTaskFragment extends DialogFragment
     String[] monthNames = new DateFormatSymbols(new Locale("ru")).getShortMonths();
 
     private static List<SubTask> subTaskList;
+    private static Task currentTask;
     private static RecyclerView recyclerView;
     public static RecyclerSubTaskListAdapter adapter;
 
@@ -145,20 +146,18 @@ public class DetailsTaskFragment extends DialogFragment
         Context context = getContext().getApplicationContext();
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-//        executorService.execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                // Получить список подзадач в другом потоке
-//                List subTaskList = MyDatabase.getDatabase(context).taskDao().getAllUncheckedSubTasks(taskId);
-//                RecyclerSubTaskListAdapter adapter = new RecyclerSubTaskListAdapter(context, subTaskList, recyclerView, MyDatabase.getDatabase(context).taskDao());
-//                recyclerView.setAdapter(adapter);
-//            }
-//        });
-//        executorService.shutdown();
-
-
-
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                // Получить список подзадач в другом потоке
+                subTaskList = MyDatabase.getDatabase(context).taskDao().getAllUncheckedSubTasks(taskId);;
+                currentTask = MyDatabase.getDatabase(context).taskDao().getTaskById(taskId);
+                Log.d("TAG", currentTask.getTaskName());
+                adapter = new RecyclerSubTaskListAdapter(context, subTaskList, recyclerView, MyDatabase.getDatabase(context).taskDao());
+                recyclerView.setAdapter(adapter);
+            }
+        });
+        executorService.shutdown();
 //        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
 //                .setInputData(new Data.Builder().putInt("taskId", taskId).build())
 //                .build();
@@ -171,8 +170,10 @@ public class DetailsTaskFragment extends DialogFragment
 //                recyclerView.setAdapter(adapter);
 //            }
 //        });
-
-        LinearLayout priorityLayout = (LinearLayout) rootView
+        priority_image = rootView.findViewById(R.id.priority_image);
+        priority_textView = rootView.findViewById(R.id.text_details_priority);
+        checkBox = rootView.findViewById(R.id.task_completing);
+        priorityLayout = (LinearLayout) rootView
                 .findViewById(R.id.task_details_priority_layout);
         priorityLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,6 +182,7 @@ public class DetailsTaskFragment extends DialogFragment
             }
         });
         priorityButton = (Button) rootView.findViewById(R.id.details_priority_button);
+
         priorityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -196,9 +198,28 @@ public class DetailsTaskFragment extends DialogFragment
                 fragmentButtonClickListener.addTaskButtonClick(getArguments().getInt("taskId"));
             }
         });
+        try {
+            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            downloadPriority();
+            // Код, который должен выполняться после завершения всех потоков
+        } catch (InterruptedException ignored) {}
         return rootView;
     }
+    private void downloadPriority(){
+        int taskPriority = currentTask.getTaskPriority();
+        priority_textView.setText("Приоритет "+ String.valueOf(taskPriority));
+        if (taskPriority<4 && taskPriority>0) {
+            priorityButton.setVisibility(View.GONE);
+            priorityLayout.setVisibility(View.VISIBLE);
+            setPriorityImage(taskPriority);
+        }
+        else {
+            priorityButton.setVisibility(View.VISIBLE);
+            priorityLayout.setVisibility(View.GONE);
+            setPriorityImage(taskPriority);
+        }
 
+    }
     public void updateRecyclerView(){
         Context context = getContext();
         new Thread(new Runnable() {
@@ -232,10 +253,38 @@ public class DetailsTaskFragment extends DialogFragment
     }
 
     public void setPriority(int priority) {
-        TextView text_priority = getView().findViewById(R.id.text_details_priority);
-        text_priority.setText("Приоритет " + String.valueOf(priority));
+        currentTask.setTaskPriority(priority);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                MyDatabase.getDatabase(getContext().getApplicationContext()).taskDao().update(currentTask);
+            }
+        });
+        executorService.shutdown();
+        downloadPriority();
     }
+    private void setPriorityImage(int priority){
+        switch (priority){
+            case 1:
+                priority_image.setImageResource(R.drawable.flag_red);
+                checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext().getApplicationContext(), R.color.coco_red)));
+                break;
+            case 2:
+                priority_image.setImageResource(R.drawable.flag_green);
+                checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext().getApplicationContext(), R.color.green)));
+                break;
+            case 3:
+                priority_image.setImageResource(R.drawable.flag_blue);
+                checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext().getApplicationContext(), R.color.blue)));
+                break;
+            default:
+                priority_image.setImageResource(R.drawable.flag_red);
+                checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext().getApplicationContext(), R.color.black)));
 
+                break;
+        }
+    }
     @Override
     public void onStart() {
         super.onStart();
@@ -262,6 +311,7 @@ public class DetailsTaskFragment extends DialogFragment
     public void onPause() {
         super.onPause();
         Log.i("TAG", "onPause: ");
+        fragmentButtonClickListener.updateTaskRecView();
         dismiss();
         getParentFragmentManager().beginTransaction().remove(getParentFragmentManager().findFragmentById(android.R.id.content)).commit();
 

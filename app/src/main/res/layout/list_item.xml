@@ -11,9 +11,7 @@
         android:layout_height="32dp"
         android:layout_gravity="center_vertical"
         android:background="@null"
-        android:button="@drawable/checkbox_selector"
-        android:buttonTint="@color/black"
-        app:buttonIcon="@drawable/icons_radio_button_unchecked" />
+        android:button="@drawable/checkbox_selector" />
 
     <LinearLayout
         android:id="@+id/taskLayout"

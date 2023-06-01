@@ -97,7 +97,8 @@ public class MainActivity
                 Task newTask = MyDatabase.getDatabase(context).taskDao().getLastInsertedTask();
                 taskList.add(newTask);
             } else {
-                MainActivity.taskList = MyDatabase.getDatabase(context).taskDao().getAllUnchecked();
+                MainActivity.taskList = MyDatabase.getDatabase(context).taskDao().getAllUncheckedTasksSortedByPriority();
+                adapter=null;
 //               for (Task t:taskList) {
 //                   db.taskDao().delete(t);
 //               }
@@ -258,8 +259,6 @@ public class MainActivity
             recyclerView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
         new LoadDataTask(this).execute();
     }
-
-
 
     @Override
     public void closeButtonClickListener() {
