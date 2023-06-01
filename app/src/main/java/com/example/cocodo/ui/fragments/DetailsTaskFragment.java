@@ -1,5 +1,6 @@
 package com.example.cocodo.ui.fragments;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -50,6 +51,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class DetailsTaskFragment extends DialogFragment
@@ -140,7 +142,21 @@ public class DetailsTaskFragment extends DialogFragment
         taskId = getArguments().getInt("taskId");
         recyclerView = rootView.findViewById(R.id.recycler_view_details_subtasks);
         Log.d("TAG", String.valueOf(taskId));
-// Создать экземпляр WorkerParameters
+        Context context = getContext().getApplicationContext();
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+//        executorService.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                // Получить список подзадач в другом потоке
+//                List subTaskList = MyDatabase.getDatabase(context).taskDao().getAllUncheckedSubTasks(taskId);
+//                RecyclerSubTaskListAdapter adapter = new RecyclerSubTaskListAdapter(context, subTaskList, recyclerView, MyDatabase.getDatabase(context).taskDao());
+//                recyclerView.setAdapter(adapter);
+//            }
+//        });
+//        executorService.shutdown();
+
 
 
 //        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
