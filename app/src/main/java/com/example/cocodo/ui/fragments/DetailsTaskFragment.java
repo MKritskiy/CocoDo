@@ -8,47 +8,49 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.Operation;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
+import androidx.work.Worker;
+import androidx.work.WorkerParameters;
 
-import com.example.cocodo.MainActivity;
 import com.example.cocodo.R;
 import com.example.cocodo.database.MyDatabase;
 import com.example.cocodo.utils.RecyclerSubTaskListAdapter;
 import com.example.cocodo.utils.SpacesItemDecoration;
 import com.example.cocodo.utils.SubTask;
-import com.example.cocodo.utils.TempAdapter;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import java.text.DateFormatSymbols;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
+import java.util.concurrent.Executors;
 
 public class DetailsTaskFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener,
@@ -109,6 +111,28 @@ public class DetailsTaskFragment extends DialogFragment
         }
         return dialog;
     }
+//    public static class MyWorker extends Worker {
+//
+//        private int taskId;
+//
+//        public MyWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+//            super(context, workerParams);
+//            this.taskId = getInputData().getInt("taskId", 0);
+//        }
+//
+//        @NonNull
+//        @Override
+//        public Result doWork() {
+//            // Получение списка непроверенных задач
+//            List<SubTask> subTaskList = MyDatabase.getDatabase(getApplicationContext())
+//                    .taskDao()
+//                    .getAllUncheckedSubTasks(taskId);
+//            adapter = new RecyclerSubTaskListAdapter(getApplicationContext(), subTaskList, recyclerView, MyDatabase.getDatabase(getApplicationContext()).taskDao());
+//
+//            // Результат выполнения задачи
+//            return Result.success();
+//        }
+//    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -116,13 +140,24 @@ public class DetailsTaskFragment extends DialogFragment
         taskId = getArguments().getInt("taskId");
         recyclerView = rootView.findViewById(R.id.recycler_view_details_subtasks);
         Log.d("TAG", String.valueOf(taskId));
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                updateRecyclerView();
-            }
-        }).start();
-        LinearLayout priorityLayout = (LinearLayout) rootView.findViewById(R.id.task_details_priority_layout);
+// Создать экземпляр WorkerParameters
+
+
+//        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
+//                .setInputData(new Data.Builder().putInt("taskId", taskId).build())
+//                .build();
+//        WorkManager.getInstance(getContext().getApplicationContext()).enqueue(workRequest);
+//
+//        UUID workRequestId = workRequest.getId();
+//        LiveData<WorkInfo> workInfoLiveData = WorkManager.getInstance(getContext().getApplicationContext()).getWorkInfoByIdLiveData(workRequestId);
+//        workInfoLiveData.observe(this, workInfo -> {
+//            if (workInfo != null && workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+//                recyclerView.setAdapter(adapter);
+//            }
+//        });
+
+        LinearLayout priorityLayout = (LinearLayout) rootView
+                .findViewById(R.id.task_details_priority_layout);
         priorityLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,7 +188,7 @@ public class DetailsTaskFragment extends DialogFragment
         new Thread(new Runnable() {
             @Override
             public void run() {
-                subTaskList = MyDatabase.getDatabase(context).taskDao().getAllUncheckedSubTasks(taskId);
+                    subTaskList = MyDatabase.getDatabase(context).taskDao().getAllUncheckedSubTasks(taskId);
                     adapter = new RecyclerSubTaskListAdapter(context, subTaskList, recyclerView, MyDatabase.getDatabase(context).taskDao());
                     recyclerView.setAdapter(adapter);
 

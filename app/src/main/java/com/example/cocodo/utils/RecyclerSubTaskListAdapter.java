@@ -148,6 +148,9 @@ public class RecyclerSubTaskListAdapter extends RecyclerView.Adapter<RecyclerSub
 
     @Override
     public int getItemCount() {
+        if (subTaskList == null) {
+            return 0;
+        }
         return subTaskList.size();
     }
 
