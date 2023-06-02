@@ -74,7 +74,7 @@ public class AddTaskFragment
             // Устанавливаем фон фрагмента прозрачным, чтобы была видна нижняя часть экрана
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             // Устанавливаем анимацию для плавного выплывания
-//            window.setWindowAnimations(R.style.DialogAnimation);
+            window.setWindowAnimations(R.style.DialogAnimation);
             // Устанавливаем параметры для расположения фрагмента внизу экрана
             WindowManager.LayoutParams params = window.getAttributes();
             params.gravity = Gravity.BOTTOM;

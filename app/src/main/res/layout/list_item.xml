@@ -10,8 +10,9 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_gravity="center_vertical"
-        android:background="@null"
-        android:button="@drawable/checkbox_selector" />
+        android:button="@drawable/checkbox_selector"
+        android:theme="@style/CheckBoxStyle"
+        />
 
     <LinearLayout
         android:id="@+id/taskLayout"

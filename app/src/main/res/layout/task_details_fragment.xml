@@ -1,324 +1,333 @@
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/constraint_layout"
+    android:id="@+id/details_fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/back_gray"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_gravity="bottom"
+    android:animation="@anim/slide_up">
 
-    <LinearLayout
-        android:id="@+id/top_details"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="end"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent">
 
-        <ImageButton
-            android:id="@+id/details_properties_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            android:paddingLeft="10dp"
-            app:srcCompat="@drawable/parameters" />
-
-        <ImageButton
-            android:id="@+id/details_close_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            android:paddingLeft="10dp"
-            app:srcCompat="@drawable/cross" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/task_details_main"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/rounded_corners"
-        android:orientation="vertical"
-        android:padding="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/top_details">
-
-        <LinearLayout
-            android:id="@+id/task_details_name_layout"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/rounded_corners"
-            android:gravity="center_vertical">
+            android:background="@color/back_gray"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <CheckBox
-                android:id="@+id/task_completing"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_gravity="center_vertical"
-                android:button="@drawable/checkbox_selector"
-                app:buttonIconTint="@color/black" />
-
-            <TextView
-                android:id="@+id/task_details_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:fontFamily="@font/inter_semibold"
-                android:text="Название задачи"
-                android:textColor="#000000"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/edit_title"
+            <LinearLayout
+                android:id="@+id/top_details"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:hint="Введите название задачи"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageButton
+                    android:id="@+id/details_properties_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#00FFFFFF"
+                    android:paddingLeft="10dp"
+                    app:srcCompat="@drawable/parameters" />
+
+                <ImageButton
+                    android:id="@+id/details_close_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#00FFFFFF"
+                    android:paddingLeft="10dp"
+                    app:srcCompat="@drawable/cross" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/task_details_main"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_corners"
+                android:orientation="vertical"
                 android:padding="16dp"
-                android:text="Название задачи"
-                android:visibility="gone" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/top_details">
 
-        </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/task_details_name_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/rounded_corners"
+                    android:gravity="center_vertical">
 
-        <LinearLayout
-            android:id="@+id/task_details_desc_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/rounded_corners"
-            android:gravity="center_vertical">
+                    <CheckBox
+                        android:id="@+id/task_completing"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center_vertical"
+                        android:button="@drawable/checkbox_selector"
+                        android:theme="@style/CheckBoxStyle"
+                         />
 
-            <ImageView
-                android:id="@+id/description_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/description"
-                app:tint="#757575" />
+                    <TextView
+                        android:id="@+id/task_details_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:fontFamily="@font/inter_semibold"
+                        android:text="Название задачи"
+                        android:textColor="#000000"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/text_details_desc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:onClick="onDescClicked"
-                android:text="Описание задачи"
-                android:textStyle="bold" />
+                    <EditText
+                        android:id="@+id/edit_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:hint="Введите название задачи"
+                        android:padding="16dp"
+                        android:text="Название задачи"
+                        android:visibility="gone" />
 
-            <EditText
-                android:id="@+id/edit_details_desc"
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/task_details_desc_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/rounded_corners"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/description_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/description"
+                        app:tint="#757575" />
+
+                    <TextView
+                        android:id="@+id/text_details_desc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:onClick="onDescClicked"
+                        android:text="Описание задачи"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/edit_details_desc"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="Введите описание задачи"
+                        android:padding="16dp"
+                        android:text="Описание задачи"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/task_details_date_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/rounded_corners"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/calendar_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/calendar_today"
+                        app:tint="@color/green" />
+
+                    <TextView
+                        android:id="@+id/text_details_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:fontFamily="@font/inter"
+                        android:text="сегодня 16:00"
+                        android:textColor="#000000"
+                        android:textSize="14sp" />
+
+                    <EditText
+                        android:id="@+id/edit_due_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="Введите срок выполнения задачи"
+                        android:padding="16dp"
+                        android:text="Срок выполнения задачи"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/task_details_priority_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/rounded_corners"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/priority_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        app:srcCompat="@drawable/flag_red" />
+
+                    <TextView
+                        android:id="@+id/text_details_priority"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:clickable="false"
+                        android:fontFamily="@font/inter"
+                        android:text="Приоритет задачи"
+                        android:textColor="@color/black"
+                        android:textSize="14sp" />
+
+                    <EditText
+                        android:id="@+id/edit_details_priority"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="Введите приоритет задачи"
+                        android:padding="16dp"
+                        android:text="Приоритет задачи"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/task_details_buttons_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/details_priority_button"
+                        style="@style/Widget.Material3.Button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="#FFFFFF"
+                        android:fontFamily="@font/inter_semibold"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="Приоритет"
+                        android:textAlignment="center"
+                        android:textColor="#000000"
+                        android:textSize="12sp"
+                        app:strokeColor="#80000000"
+                        app:strokeWidth="1dp" />
+
+                    <Button
+                        android:id="@+id/deadline_button2"
+                        style="@style/Widget.Material3.Button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="#FFFFFF"
+                        android:fontFamily="@font/inter_semibold"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="Напоминание"
+                        android:textAlignment="center"
+                        android:textColor="#000000"
+                        android:textSize="12sp"
+                        app:strokeColor="#80000000"
+                        app:strokeWidth="1dp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/subtask_header"
                 android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/task_details_main">
+
+                <TextView
+                    android:id="@+id/text_subtasks"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/inter_semibold"
+                    android:text="Подзадачи"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/subtask_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    app:srcCompat="@drawable/many" />
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="4dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/inter"
+                    android:text="1/5"
+                    android:textColor="@color/black" />
+
+                <Button
+                    android:id="@+id/button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:backgroundTint="@color/coco_red"
+                    android:fontFamily="@font/inter_semibold"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="Свернуть"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_details_subtasks"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:hint="Введите описание задачи"
-                android:padding="16dp"
-                android:text="Описание задачи"
-                android:visibility="gone" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/task_details_date_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/rounded_corners"
-            android:gravity="center_vertical">
-
-            <ImageView
-                android:id="@+id/calendar_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/calendar_today"
-                app:tint="@color/green" />
-
-            <TextView
-                android:id="@+id/text_details_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:fontFamily="@font/inter"
-                android:text="сегодня 16:00"
-                android:textColor="#000000"
-                android:textSize="14sp" />
-
-            <EditText
-                android:id="@+id/edit_due_date"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="Введите срок выполнения задачи"
-                android:padding="16dp"
-                android:text="Срок выполнения задачи"
-                android:visibility="gone" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/task_details_priority_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/rounded_corners"
-            android:gravity="center_vertical">
-
-            <ImageView
-                android:id="@+id/priority_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="false"
-                app:srcCompat="@drawable/flag_red" />
-
-            <TextView
-                android:id="@+id/text_details_priority"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:clickable="false"
-                android:fontFamily="@font/inter"
-                android:text="Приоритет задачи"
-                android:textColor="@color/black"
-                android:textSize="14sp" />
-
-            <EditText
-                android:id="@+id/edit_details_priority"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="Введите приоритет задачи"
-                android:padding="16dp"
-                android:text="Приоритет задачи"
-                android:visibility="gone" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/task_details_buttons_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+                android:layout_marginTop="16dp"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toTopOf="@+id/button_details_add_subtask"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/subtask_header" />
 
             <Button
-                android:id="@+id/details_priority_button"
-                style="@style/Widget.Material3.Button"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
-                android:backgroundTint="#FFFFFF"
-                android:fontFamily="@font/inter_semibold"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:text="Приоритет"
-                android:textAlignment="center"
-                android:textColor="#000000"
-                android:textSize="12sp"
-                app:strokeColor="#80000000"
-                app:strokeWidth="1dp" />
+                android:id="@+id/button_details_add_subtask"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/coco_red"
+                android:onClick="onAddSubtaskClicked"
+                android:padding="16dp"
+                android:text="Добавить подзадачу"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
-            <Button
-                android:id="@+id/deadline_button2"
-                style="@style/Widget.Material3.Button"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:layout_weight="1"
-                android:backgroundTint="#FFFFFF"
-                android:fontFamily="@font/inter_semibold"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:text="Напоминание"
-                android:textAlignment="center"
-                android:textColor="#000000"
-                android:textSize="12sp"
-                app:strokeColor="#80000000"
-                app:strokeWidth="1dp" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:id="@+id/subtask_header"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/task_details_main">
-
-        <TextView
-            android:id="@+id/text_subtasks"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:fontFamily="@font/inter_semibold"
-            android:text="Подзадачи"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/subtask_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            app:srcCompat="@drawable/many" />
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginTop="4dp"
-            android:layout_weight="1"
-            android:fontFamily="@font/inter"
-            android:text="1/5"
-            android:textColor="@color/black" />
-
-        <Button
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:backgroundTint="@color/coco_red"
-            android:fontFamily="@font/inter_semibold"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:text="Свернуть"
-            android:textSize="12sp" />
-    </LinearLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view_details_subtasks"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
-        android:clipToPadding="false"
-        android:nestedScrollingEnabled="false"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/button_details_add_subtask"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/subtask_header" />
-
-    <Button
-        android:id="@+id/button_details_add_subtask"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/coco_red"
-        android:onClick="onAddSubtaskClicked"
-        android:padding="16dp"
-        android:text="Добавить подзадачу"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</FrameLayout>

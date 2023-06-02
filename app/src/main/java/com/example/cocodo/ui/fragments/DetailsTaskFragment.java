@@ -4,15 +4,14 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,28 +51,30 @@ public class DetailsTaskFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener,
         TimePickerDialog.OnTimeSetListener {
 
-    public interface OnFragmentButtonClickListener{
+    public interface OnFragmentButtonClickListener {
         void addTaskButtonClick(int taskId);
+
         void priorityButtonClick(View view);
+
         void updateTaskRecView();
     }
 
     private DetailsTaskFragment.OnFragmentButtonClickListener fragmentButtonClickListener;
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        try{
+        try {
             fragmentButtonClickListener = (DetailsTaskFragment.OnFragmentButtonClickListener) context;
-        } catch (ClassCastException e){
+        } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
                     + " должен реализовывать интерфейс OnFragmentButtonClickListener");
         }
     }
 
 
-
     private EditText taskNameEditText, descriptionEditText;
-    private  TextView priority_textView;
+    private TextView priority_textView;
     private Button deadlineButton, priorityButton, reminderButton, addButton, closeButton;
     private LinearLayout priorityLayout;
     private CheckBox checkBox;
@@ -104,7 +105,7 @@ public class DetailsTaskFragment extends DialogFragment
             // Устанавливаем фон фрагмента прозрачным, чтобы была видна нижняя часть экрана
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             // Устанавливаем анимацию для плавного выплывания
-//            window.setWindowAnimations(R.style.DialogAnimation);
+            window.setWindowAnimations(R.style.DialogAnimation);
             // Устанавливаем параметры для расположения фрагмента внизу экрана
             WindowManager.LayoutParams params = window.getAttributes();
             params.gravity = Gravity.BOTTOM;
@@ -114,7 +115,8 @@ public class DetailsTaskFragment extends DialogFragment
         }
         return dialog;
     }
-//    public static class MyWorker extends Worker {
+
+    //    public static class MyWorker extends Worker {
 //
 //        private int taskId;
 //
@@ -146,11 +148,15 @@ public class DetailsTaskFragment extends DialogFragment
         Context context = getContext().getApplicationContext();
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+
+        checkBox = rootView.findViewById(R.id.task_completing);
         executorService.execute(new Runnable() {
             @Override
             public void run() {
                 // Получить список подзадач в другом потоке
-                subTaskList = MyDatabase.getDatabase(context).taskDao().getAllUncheckedSubTasks(taskId);;
+                subTaskList = MyDatabase.getDatabase(context).taskDao().getAllUncheckedSubTasks(taskId);
+                ;
                 currentTask = MyDatabase.getDatabase(context).taskDao().getTaskById(taskId);
                 Log.d("TAG", currentTask.getTaskName());
                 adapter = new RecyclerSubTaskListAdapter(context, subTaskList, recyclerView, MyDatabase.getDatabase(context).taskDao());
@@ -175,10 +181,20 @@ public class DetailsTaskFragment extends DialogFragment
         checkBox = rootView.findViewById(R.id.task_completing);
         priorityLayout = (LinearLayout) rootView
                 .findViewById(R.id.task_details_priority_layout);
+        Handler handler = new Handler();
         priorityLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fragmentButtonClickListener.priorityButtonClick(rootView);
+                if (priorityLayout.isClickable()) {
+                    priorityLayout.setClickable(false);
+                    fragmentButtonClickListener.priorityButtonClick(rootView);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            priorityLayout.setClickable(true);
+                        }
+                    }, 200);
+                }
             }
         });
         priorityButton = (Button) rootView.findViewById(R.id.details_priority_button);
@@ -186,8 +202,16 @@ public class DetailsTaskFragment extends DialogFragment
         priorityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fragmentButtonClickListener.priorityButtonClick(rootView);
-
+                if (priorityLayout.isClickable()) {
+                    priorityLayout.setClickable(false);
+                    fragmentButtonClickListener.priorityButtonClick(rootView);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            priorityLayout.setClickable(true);
+                        }
+                    }, 200);
+                }
             }
         });
 
@@ -202,38 +226,41 @@ public class DetailsTaskFragment extends DialogFragment
             executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
             downloadPriority();
             // Код, который должен выполняться после завершения всех потоков
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException ignored) {
+        }
         return rootView;
     }
-    private void downloadPriority(){
+
+    private void downloadPriority() {
         int taskPriority = currentTask.getTaskPriority();
-        priority_textView.setText("Приоритет "+ String.valueOf(taskPriority));
-        if (taskPriority<4 && taskPriority>0) {
+        priority_textView.setText("Приоритет " + String.valueOf(taskPriority));
+        if (taskPriority < 4 && taskPriority > 0) {
             priorityButton.setVisibility(View.GONE);
             priorityLayout.setVisibility(View.VISIBLE);
             setPriorityImage(taskPriority);
-        }
-        else {
+        } else {
             priorityButton.setVisibility(View.VISIBLE);
             priorityLayout.setVisibility(View.GONE);
             setPriorityImage(taskPriority);
         }
 
     }
-    public void updateRecyclerView(){
+
+    public void updateRecyclerView() {
         Context context = getContext();
         new Thread(new Runnable() {
             @Override
             public void run() {
-                    subTaskList = MyDatabase.getDatabase(context).taskDao().getAllUncheckedSubTasks(taskId);
-                    adapter = new RecyclerSubTaskListAdapter(context, subTaskList, recyclerView, MyDatabase.getDatabase(context).taskDao());
-                    recyclerView.setAdapter(adapter);
+                subTaskList = MyDatabase.getDatabase(context).taskDao().getAllUncheckedSubTasks(taskId);
+                adapter = new RecyclerSubTaskListAdapter(context, subTaskList, recyclerView, MyDatabase.getDatabase(context).taskDao());
+                recyclerView.setAdapter(adapter);
 
             }
         }).start();
     }
-    public void addSubTask(int taskId, String subTaskName, String subTaskDescription, String subTaskTime){
-        if (adapter==null){
+
+    public void addSubTask(int taskId, String subTaskName, String subTaskDescription, String subTaskTime) {
+        if (adapter == null) {
             updateRecyclerView();
         }
         new Thread(new Runnable() {
@@ -264,8 +291,9 @@ public class DetailsTaskFragment extends DialogFragment
         executorService.shutdown();
         downloadPriority();
     }
-    private void setPriorityImage(int priority){
-        switch (priority){
+
+    private void setPriorityImage(int priority) {
+        switch (priority) {
             case 1:
                 priority_image.setImageResource(R.drawable.flag_red);
                 checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext().getApplicationContext(), R.color.coco_red)));
@@ -285,28 +313,19 @@ public class DetailsTaskFragment extends DialogFragment
                 break;
         }
     }
+
     @Override
     public void onStart() {
         super.onStart();
 
         // Задаем обработчик события нажатия на системную кнопку "Назад"
-        requireDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
-                    // Удаляем фрагмент и затемненный фон
-                    dismiss();
-                    getParentFragmentManager().beginTransaction().remove(getParentFragmentManager().findFragmentById(android.R.id.content)).commit();
-                    return true;
-                }
-                return false;
-            }
-        });
+
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);
-        if (recyclerView.getItemDecorationCount()<1)
+        if (recyclerView.getItemDecorationCount() < 1)
             recyclerView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
 //        adapter.notifyDataSetChanged();
     }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -320,7 +339,7 @@ public class DetailsTaskFragment extends DialogFragment
     @Override
     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
         yearFinal = i;
-        monthFinal = i1+1;
+        monthFinal = i1 + 1;
         dayFinal = i2;
 
         Calendar calendar = Calendar.getInstance();
@@ -331,14 +350,15 @@ public class DetailsTaskFragment extends DialogFragment
                 hour, minute, DateFormat.is24HourFormat(getContext()));
         timePickerDialog.show();
     }
+
     @Override
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
         hourFinal = i;
         minuteFinal = i1;
         deadline = dayFinal + " " +
-                monthNames[monthFinal-1] +" " +
-                yearFinal + " "+
-                hourFinal+ ":" +
+                monthNames[monthFinal - 1] + " " +
+                yearFinal + " " +
+                hourFinal + ":" +
                 minuteFinal;
         deadlineButton.setText(deadline);
     }

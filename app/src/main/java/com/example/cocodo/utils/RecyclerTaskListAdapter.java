@@ -3,10 +3,14 @@ package com.example.cocodo.utils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -55,7 +59,6 @@ public class RecyclerTaskListAdapter extends RecyclerView.Adapter<RecyclerTaskLi
         View view = inflater.inflate(R.layout.list_item, parent, false);
         return new ViewHolder(view);
     }
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
@@ -70,11 +73,11 @@ public class RecyclerTaskListAdapter extends RecyclerView.Adapter<RecyclerTaskLi
         });
         Task task = taskList.get(position);
         holder.setPriorityImage(task.getTaskPriority());
-
         setupNameAndTimeText(holder, task);
 
         boolean isVisible = !holder.textTimeView.getText().toString().trim().isEmpty();
         holder.textTimeView.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+
 
         holder.checkBox.setOnCheckedChangeListener(null);
         holder.checkBox.setChecked(task.getIsCompleted() > 0);
@@ -84,6 +87,7 @@ public class RecyclerTaskListAdapter extends RecyclerView.Adapter<RecyclerTaskLi
             holder.checkBox.setOnCheckedChangeListener(createCheckedChangeListener(holder, currentTask));
         }
     }
+
     private void setupNameAndTimeText(ViewHolder holder, Task task) {
         holder.textNameView.setText(task.getTaskName());
         holder.textTimeView.setText(task.getTaskTime());
