@@ -16,6 +16,7 @@ import com.example.cocodo.R;
 public class NavBarFragment extends Fragment {
     public interface OnFragmentButtonClickListener{
         void addTaskButtonClick();
+        void makeReq();
     }
     private NavBarFragment.OnFragmentButtonClickListener fragmentButtonClickListener;
     @Override
@@ -34,10 +35,18 @@ public class NavBarFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.nav_bar_fragment, container, false);
         ImageButton addButton = view.findViewById(R.id.addButton);
+        ImageButton groupButton = view.findViewById(R.id.groupButton);
+
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 fragmentButtonClickListener.addTaskButtonClick();
+            }
+        });
+        groupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fragmentButtonClickListener.makeReq();
             }
         });
         return view;

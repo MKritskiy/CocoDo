@@ -116,6 +116,7 @@ public class DetailsTaskFragment extends DialogFragment
         return dialog;
     }
 
+
     //    public static class MyWorker extends Worker {
 //
 //        private int taskId;
@@ -132,7 +133,11 @@ public class DetailsTaskFragment extends DialogFragment
 //            List<SubTask> subTaskList = MyDatabase.getDatabase(getApplicationContext())
 //                    .taskDao()
 //                    .getAllUncheckedSubTasks(taskId);
-//            adapter = new RecyclerSubTaskListAdapter(getApplicationContext(), subTaskList, recyclerView, MyDatabase.getDatabase(getApplicationContext()).taskDao());
+//            adapter = new RecyclerSubTaskListAdapter(
+//                    getApplicationContext(),
+//                    subTaskList,
+//                    recyclerView,
+//                    MyDatabase.getDatabase(getApplicationContext()).taskDao());
 //
 //            // Результат выполнения задачи
 //            return Result.success();
@@ -155,11 +160,20 @@ public class DetailsTaskFragment extends DialogFragment
             @Override
             public void run() {
                 // Получить список подзадач в другом потоке
-                subTaskList = MyDatabase.getDatabase(context).taskDao().getAllUncheckedSubTasks(taskId);
-                ;
-                currentTask = MyDatabase.getDatabase(context).taskDao().getTaskById(taskId);
+                subTaskList = MyDatabase
+                        .getDatabase(context)
+                        .taskDao()
+                        .getAllUncheckedSubTasks(taskId);
+                currentTask = MyDatabase
+                        .getDatabase(context)
+                        .taskDao()
+                        .getTaskById(taskId);
                 Log.d("TAG", currentTask.getTaskName());
-                adapter = new RecyclerSubTaskListAdapter(context, subTaskList, recyclerView, MyDatabase.getDatabase(context).taskDao());
+                adapter = new RecyclerSubTaskListAdapter(
+                        context,
+                        subTaskList,
+                        recyclerView,
+                        MyDatabase.getDatabase(context).taskDao());
                 recyclerView.setAdapter(adapter);
             }
         });
@@ -170,7 +184,10 @@ public class DetailsTaskFragment extends DialogFragment
 //        WorkManager.getInstance(getContext().getApplicationContext()).enqueue(workRequest);
 //
 //        UUID workRequestId = workRequest.getId();
-//        LiveData<WorkInfo> workInfoLiveData = WorkManager.getInstance(getContext().getApplicationContext()).getWorkInfoByIdLiveData(workRequestId);
+//        LiveData<WorkInfo> workInfoLiveData = WorkManager.getInstance(
+//                        getContext()
+//                                .getApplicationContext())
+//                .getWorkInfoByIdLiveData(workRequestId);
 //        workInfoLiveData.observe(this, workInfo -> {
 //            if (workInfo != null && workInfo.getState() == WorkInfo.State.SUCCEEDED) {
 //                recyclerView.setAdapter(adapter);
@@ -225,7 +242,6 @@ public class DetailsTaskFragment extends DialogFragment
         try {
             executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
             downloadPriority();
-            // Код, который должен выполняться после завершения всех потоков
         } catch (InterruptedException ignored) {
         }
         return rootView;

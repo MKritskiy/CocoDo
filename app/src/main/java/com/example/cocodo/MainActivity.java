@@ -3,23 +3,18 @@ package com.example.cocodo;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.example.cocodo.api.ApiClient;
 import com.example.cocodo.database.MyDatabase;
 import com.example.cocodo.ui.fragments.AddTaskFragment;
 import com.example.cocodo.ui.fragments.BackgroundFragment;
@@ -41,6 +37,10 @@ import com.example.cocodo.utils.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity
         extends
@@ -89,7 +89,7 @@ public class MainActivity
 //    }
     public static void onTaskListItemClickListener(View view, int position) {
         DetailsTaskFragment lastFragment = (DetailsTaskFragment) fragmentManager.findFragmentByTag("TaskDetailsFragment");
-        if (lastFragment==null || !lastFragment.isAdded()) {
+        if (lastFragment == null || !lastFragment.isAdded()) {
             Bundle bundle = new Bundle();
             DetailsTaskFragment fragment = new DetailsTaskFragment();
             Task task = taskList.get(position);
@@ -125,7 +125,69 @@ public class MainActivity
 //            } // Handle text being sent
 //        }
     }
+    public void makeReq(){
+        ApiClient.ApiInterface apiInterface = ApiClient.getApiInterface();
 
+        Call<List<ApiClient.Post>> call = apiInterface.getPosts();
+        call.enqueue(new Callback<List<ApiClient.Post>>() {
+            @Override
+            public void onResponse(Call<List<ApiClient.Post>> call, Response<List<ApiClient.Post>> response) {
+                if (response.isSuccessful()) {
+                    List<ApiClient.Post> posts = response.body();
+                    for (ApiClient.Post post : posts) {
+                        Log.i("TAG", "Post ID: " + post.getId());
+                        Log.i("TAG", "Post Title: " + post.getTitle());
+                        Log.i("TAG", "Post Body: " + post.getBody());
+                    }
+                } else {
+                    Toast.makeText(MainActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ApiClient.Post>> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Error: " + t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        Call<ApiClient.Post> createPostCall = apiInterface.createPost(123, "My Title", "My Body");
+        createPostCall.enqueue(new Callback<ApiClient.Post>() {
+            @Override
+            public void onResponse(Call<ApiClient.Post> call, Response<ApiClient.Post> response) {
+                if (response.isSuccessful()) {
+                    ApiClient.Post post = response.body();
+                    Log.i("TAG", "New Post ID: " + post.getId());
+                } else {
+                    Toast.makeText(MainActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onFailure(Call<ApiClient.Post> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Error: " + t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        int postId = 100;
+        Call<ApiClient.Post> getPostCall = apiInterface.getPost(postId);
+        getPostCall.enqueue(new Callback<ApiClient.Post>() {
+            @Override
+            public void onResponse(Call<ApiClient.Post> call, Response<ApiClient.Post> response) {
+                if (response.isSuccessful()) {
+                    ApiClient.Post post = response.body();
+                    Log.i("TAG", "Post ID: " + post.getId());
+                    Log.i("TAG", "Post Title: " + post.getTitle());
+                    Log.i("TAG", "Post Body: " + post.getBody());
+                } else {
+                    Toast.makeText(MainActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiClient.Post> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Error: " + t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     @Override
     public void addTaskButtonClick() {
         // Создаем экземпляр вашего фрагмента
@@ -160,7 +222,7 @@ public class MainActivity
         transaction.add(android.R.id.content, new BackgroundFragment());
 
         // Показываем фрагмент с помощью менеджера фрагментов
-        transaction.add( fragment, "AddTaskFragment")
+        transaction.add(fragment, "AddTaskFragment")
                 .addToBackStack(null)
                 .commit();
     }
