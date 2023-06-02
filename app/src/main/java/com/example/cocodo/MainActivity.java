@@ -11,7 +11,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.Toast;
@@ -71,22 +70,7 @@ public class MainActivity
     private static List<Task> taskList = new ArrayList<>();
     String sharedText;
 
-    //    @Override
-//    protected void onNewIntent(Intent intent) {
-//        super.onNewIntent(intent);
-//        Log.i("Test", "onNewIntent: ");
-//        handleSendText(intent);
-//    }
-//
-//    void handleSendText(Intent intent) {
-//        String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
-//        Log.i("Test", "onHandleSendText: "+ sharedText);
-//
-//        if (sharedText != null) {
-//            recyclerView = findViewById(R.id.taskRecyclerList);
-//            new LoadDataTask(this, new Task(sharedText, "", "")).execute();
-//        }
-//    }
+
     public static void onTaskListItemClickListener(View view, int position) {
         DetailsTaskFragment lastFragment = (DetailsTaskFragment) fragmentManager.findFragmentByTag("TaskDetailsFragment");
         if (lastFragment == null || !lastFragment.isAdded()) {
@@ -112,20 +96,10 @@ public class MainActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         fragmentManager = getSupportFragmentManager();
-//        Intent intent = getIntent();
-//        String action = intent.getAction();
-//        String type = intent.getType();
-//
-//
-//
-//        if (Intent.ACTION_SEND.equals(action) && type != null) {
-//            if ("text/plain".equals(type)) {
-//                Log.i("Test", "onCreate: ");
-//                handleSendText(intent);
-//            } // Handle text being sent
-//        }
+
     }
-    public void makeReq(){
+
+    public void makeReq() {
         ApiClient.ApiInterface apiInterface = ApiClient.getApiInterface();
 
         Call<List<ApiClient.Post>> call = apiInterface.getPosts();
@@ -161,6 +135,7 @@ public class MainActivity
                     Toast.makeText(MainActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
             public void onFailure(Call<ApiClient.Post> call, Throwable t) {
                 Toast.makeText(MainActivity.this, "Error: " + t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
@@ -188,9 +163,9 @@ public class MainActivity
             }
         });
     }
+
     @Override
     public void addTaskButtonClick() {
-        // Создаем экземпляр вашего фрагмента
         AddTaskFragment fragment = new AddTaskFragment();
         Bundle bundle = new Bundle();
         bundle.putBoolean("isSubTask", false);
@@ -198,10 +173,8 @@ public class MainActivity
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setCustomAnimations(R.anim.fade_in, 0, 0, R.anim.fade_out);
-        // Показываем затемненный фон с помощью менеджера фрагментов
         transaction.add(android.R.id.content, new BackgroundFragment());
 
-        // Показываем фрагмент с помощью менеджера фрагментов
         transaction.add(fragment, "AddTaskFragment")
                 .addToBackStack(null)
                 .commit();
@@ -239,14 +212,12 @@ public class MainActivity
         backgroundPopupWindow.setAnimationStyle(R.style.BackgroundAnimation);
         backgroundPopupWindow.showAtLocation(view, Gravity.CENTER | Gravity.BOTTOM, 0, 0);
 
-
         PopupWindow popupWindow = new PopupWindow(this);
         View layout = getLayoutInflater().inflate(R.layout.popup_window, null);
         popupWindow.setContentView(layout);
         popupWindow.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
         popupWindow.setHeight(WindowManager.LayoutParams.MATCH_PARENT);
 
-//      popupWindow.setBackgroundDrawable(new ColorDrawable(Color.argb(128, 0, 0, 0)));
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popupWindow.setFocusable(true);
         popupWindow.setOutsideTouchable(true);
