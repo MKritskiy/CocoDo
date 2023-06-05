@@ -74,7 +74,7 @@ public class DetailsTaskFragment extends DialogFragment
 
 
     private EditText taskNameEditText, descriptionEditText;
-    private TextView priority_textView;
+    private TextView priority_textView, date_textView;
     private Button deadlineButton, priorityButton, reminderButton, addButton, closeButton;
     private LinearLayout priorityLayout;
     private CheckBox checkBox;
@@ -116,8 +116,7 @@ public class DetailsTaskFragment extends DialogFragment
         return dialog;
     }
 
-
-    //    public static class MyWorker extends Worker {
+//    public static class MyWorker extends Worker {
 //
 //        private int taskId;
 //
@@ -151,9 +150,9 @@ public class DetailsTaskFragment extends DialogFragment
         recyclerView = rootView.findViewById(R.id.recycler_view_details_subtasks);
         Log.d("TAG", String.valueOf(taskId));
         Context context = getContext().getApplicationContext();
-
+        taskNameEditText = rootView.findViewById(R.id.task_details_edit_text);
+        date_textView = rootView.findViewById(R.id.text_details_date);
         ExecutorService executorService = Executors.newSingleThreadExecutor();
-
 
         checkBox = rootView.findViewById(R.id.task_completing);
         executorService.execute(new Runnable() {
@@ -242,6 +241,13 @@ public class DetailsTaskFragment extends DialogFragment
         try {
             executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
             downloadPriority();
+            taskNameEditText.setText(currentTask.getTaskName());
+            if (currentTask.getTaskTime()!=null)
+                date_textView.setText(currentTask.getTaskTime());
+            else {
+                LinearLayout dateLayout = rootView.findViewById(R.id.task_details_date_layout);
+                dateLayout.setVisibility(View.GONE);
+            }
         } catch (InterruptedException ignored) {
         }
         return rootView;
@@ -270,7 +276,6 @@ public class DetailsTaskFragment extends DialogFragment
                 subTaskList = MyDatabase.getDatabase(context).taskDao().getAllUncheckedSubTasks(taskId);
                 adapter = new RecyclerSubTaskListAdapter(context, subTaskList, recyclerView, MyDatabase.getDatabase(context).taskDao());
                 recyclerView.setAdapter(adapter);
-
             }
         }).start();
     }
@@ -346,6 +351,17 @@ public class DetailsTaskFragment extends DialogFragment
     public void onPause() {
         super.onPause();
         Log.i("TAG", "onPause: ");
+        if (taskNameEditText.getText().toString()!=currentTask.getTaskName()){
+            currentTask.setTaskName(taskNameEditText.getText().toString());
+            currentTask.setIsCompleted(checkBox.isChecked()?1:0);
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            executorService.execute(new Runnable() {
+                @Override
+                public void run() {
+                    MyDatabase.getDatabase(getContext().getApplicationContext()).taskDao().update(currentTask);
+                }
+            });
+        }
         fragmentButtonClickListener.updateTaskRecView();
         dismiss();
         getParentFragmentManager().beginTransaction().remove(getParentFragmentManager().findFragmentById(android.R.id.content)).commit();

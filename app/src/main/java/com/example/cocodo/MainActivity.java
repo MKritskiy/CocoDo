@@ -318,7 +318,9 @@ public class MainActivity
                 MainActivity.taskList = MyDatabase.getDatabase(context).taskDao().getAllUncheckedTasksSortedByPriority();
                 adapter = null;
 //               for (Task t:taskList) {
-//                   db.taskDao().delete(t);
+//                   MyDatabase.getDatabase(context).taskDao().deleteAllSubTasks();
+//                   MyDatabase.getDatabase(context).taskDao().deleteAllTasks();
+//
 //               }
             }
             return null;
