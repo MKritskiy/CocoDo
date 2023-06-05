@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import com.example.cocodo.api.ApiClient;
 import com.example.cocodo.database.MyDatabase;
 import com.example.cocodo.ui.fragments.AddTaskFragment;
 import com.example.cocodo.ui.fragments.BackgroundFragment;
@@ -37,9 +35,6 @@ import com.example.cocodo.utils.Task;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity
         extends
@@ -52,16 +47,7 @@ public class MainActivity
     static final Migration MIGRATION_3_4 = new Migration(3, 4) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
-            database.execSQL("CREATE TABLE IF NOT EXISTS `subtasks` ("
-                    + "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
-                    + "`task_id` INTEGER NOT NULL, "
-                    + "`subtask_name` TEXT, "
-                    + "`subtask_desc` TEXT, "
-                    + "`subtask_time` TEXT, "
-                    + "`subtask_priority` INTEGER NOT NULL, "
-                    + "`isCompleted` INTEGER NOT NULL DEFAULT 0, "
-                    + "FOREIGN KEY(`task_id`) REFERENCES `tasks`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE"
-                    + ")");
+            database.execSQL("CREATE TABLE IF NOT EXISTS `subtasks` (" + "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " + "`task_id` INTEGER NOT NULL, " + "`subtask_name` TEXT, " + "`subtask_desc` TEXT, " + "`subtask_time` TEXT, " + "`subtask_priority` INTEGER NOT NULL, " + "`isCompleted` INTEGER NOT NULL DEFAULT 0, " + "FOREIGN KEY(`task_id`) REFERENCES `tasks`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE" + ")");
         }
     };
     static RecyclerView recyclerView;
@@ -84,9 +70,7 @@ public class MainActivity
             transaction.setCustomAnimations(R.anim.fade_in, 0, 0, R.anim.fade_out);
             transaction.add(android.R.id.content, new BackgroundFragment());
 
-            transaction.add(fragment, "TaskDetailsFragment")
-                    .addToBackStack(null)
-                    .commit();
+            transaction.add(fragment, "TaskDetailsFragment").addToBackStack(null).commit();
         }
 
     }
@@ -97,71 +81,6 @@ public class MainActivity
         setContentView(R.layout.activity_main);
         fragmentManager = getSupportFragmentManager();
 
-    }
-
-    public void makeReq() {
-        ApiClient.ApiInterface apiInterface = ApiClient.getApiInterface();
-
-        Call<List<ApiClient.Post>> call = apiInterface.getPosts();
-        call.enqueue(new Callback<List<ApiClient.Post>>() {
-            @Override
-            public void onResponse(Call<List<ApiClient.Post>> call, Response<List<ApiClient.Post>> response) {
-                if (response.isSuccessful()) {
-                    List<ApiClient.Post> posts = response.body();
-                    for (ApiClient.Post post : posts) {
-                        Log.i("TAG", "Post ID: " + post.getId());
-                        Log.i("TAG", "Post Title: " + post.getTitle());
-                        Log.i("TAG", "Post Body: " + post.getBody());
-                    }
-                } else {
-                    Toast.makeText(MainActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<ApiClient.Post>> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Error: " + t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        Call<ApiClient.Post> createPostCall = apiInterface.createPost(123, "My Title", "My Body");
-        createPostCall.enqueue(new Callback<ApiClient.Post>() {
-            @Override
-            public void onResponse(Call<ApiClient.Post> call, Response<ApiClient.Post> response) {
-                if (response.isSuccessful()) {
-                    ApiClient.Post post = response.body();
-                    Log.i("TAG", "New Post ID: " + post.getId());
-                } else {
-                    Toast.makeText(MainActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ApiClient.Post> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Error: " + t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        int postId = 100;
-        Call<ApiClient.Post> getPostCall = apiInterface.getPost(postId);
-        getPostCall.enqueue(new Callback<ApiClient.Post>() {
-            @Override
-            public void onResponse(Call<ApiClient.Post> call, Response<ApiClient.Post> response) {
-                if (response.isSuccessful()) {
-                    ApiClient.Post post = response.body();
-                    Log.i("TAG", "Post ID: " + post.getId());
-                    Log.i("TAG", "Post Title: " + post.getTitle());
-                    Log.i("TAG", "Post Body: " + post.getBody());
-                } else {
-                    Toast.makeText(MainActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ApiClient.Post> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Error: " + t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override
@@ -175,9 +94,7 @@ public class MainActivity
         transaction.setCustomAnimations(R.anim.fade_in, 0, 0, R.anim.fade_out);
         transaction.add(android.R.id.content, new BackgroundFragment());
 
-        transaction.add(fragment, "AddTaskFragment")
-                .addToBackStack(null)
-                .commit();
+        transaction.add(fragment, "AddTaskFragment").addToBackStack(null).commit();
     }
 
     @Override
@@ -195,9 +112,7 @@ public class MainActivity
         transaction.add(android.R.id.content, new BackgroundFragment());
 
         // Показываем фрагмент с помощью менеджера фрагментов
-        transaction.add(fragment, "AddTaskFragment")
-                .addToBackStack(null)
-                .commit();
+        transaction.add(fragment, "AddTaskFragment").addToBackStack(null).commit();
     }
 
     @Override
@@ -287,17 +202,12 @@ public class MainActivity
     @Override
     protected void onResume() {
         super.onResume();
-//        Intent intent = getIntent();
-//        String action = intent.getAction();
-//        String type = intent.getType();
-//        Log.i("Test", "onResume: "+action+" " +type);
-//        new LoadDataTask(this).execute();
     }
 
     private static class LoadDataTask extends AsyncTask<Void, Void, Void> {
 
-        Task task;
         private final Context context;
+        Task task;
 
         public LoadDataTask(Context context, Task task) {
             this.context = context.getApplicationContext();

@@ -116,32 +116,6 @@ public class DetailsTaskFragment extends DialogFragment
         return dialog;
     }
 
-//    public static class MyWorker extends Worker {
-//
-//        private int taskId;
-//
-//        public MyWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
-//            super(context, workerParams);
-//            this.taskId = getInputData().getInt("taskId", 0);
-//        }
-//
-//        @NonNull
-//        @Override
-//        public Result doWork() {
-//            // Получение списка непроверенных задач
-//            List<SubTask> subTaskList = MyDatabase.getDatabase(getApplicationContext())
-//                    .taskDao()
-//                    .getAllUncheckedSubTasks(taskId);
-//            adapter = new RecyclerSubTaskListAdapter(
-//                    getApplicationContext(),
-//                    subTaskList,
-//                    recyclerView,
-//                    MyDatabase.getDatabase(getApplicationContext()).taskDao());
-//
-//            // Результат выполнения задачи
-//            return Result.success();
-//        }
-//    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -177,21 +151,7 @@ public class DetailsTaskFragment extends DialogFragment
             }
         });
         executorService.shutdown();
-//        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
-//                .setInputData(new Data.Builder().putInt("taskId", taskId).build())
-//                .build();
-//        WorkManager.getInstance(getContext().getApplicationContext()).enqueue(workRequest);
-//
-//        UUID workRequestId = workRequest.getId();
-//        LiveData<WorkInfo> workInfoLiveData = WorkManager.getInstance(
-//                        getContext()
-//                                .getApplicationContext())
-//                .getWorkInfoByIdLiveData(workRequestId);
-//        workInfoLiveData.observe(this, workInfo -> {
-//            if (workInfo != null && workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-//                recyclerView.setAdapter(adapter);
-//            }
-//        });
+
         priority_image = rootView.findViewById(R.id.priority_image);
         priority_textView = rootView.findViewById(R.id.text_details_priority);
         checkBox = rootView.findViewById(R.id.task_completing);
