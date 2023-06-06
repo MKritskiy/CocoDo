@@ -41,7 +41,8 @@ public interface TaskDao {
 
     @Delete
     void deleteSubTask(SubTask subTask);
-
+    @Query("SELECT * FROM tasks WHERE isCompleted = 1 ORDER BY completed_at ASC")
+    List<Task> getCompletedTasksSortedByDate();
     @Query("DELETE FROM subtasks")
     void deleteAllSubTasks();
 
@@ -49,7 +50,8 @@ public interface TaskDao {
     List<SubTask> getAllSubTasks(int taskId);
     @Query("SELECT * FROM subtasks WHERE task_id=:taskId AND isCompleted = 0")
     List<SubTask> getAllUncheckedSubTasks(int taskId);
-
+    @Query("SELECT * FROM subtasks WHERE task_id=:taskId AND isCompleted = 1")
+    List<SubTask> getAllCheckedSubTasks(int taskId);
     @Query("SELECT * FROM tasks WHERE id = :taskId")
     Task getTaskById(int taskId);
 

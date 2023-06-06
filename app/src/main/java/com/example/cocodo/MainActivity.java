@@ -26,6 +26,7 @@ import com.example.cocodo.database.MyDatabase;
 import com.example.cocodo.ui.fragments.AddTaskFragment;
 import com.example.cocodo.ui.fragments.BackgroundFragment;
 import com.example.cocodo.ui.fragments.DetailsTaskFragment;
+import com.example.cocodo.ui.fragments.HeaderFragment;
 import com.example.cocodo.ui.fragments.NavBarFragment;
 import com.example.cocodo.ui.fragments.TaskListFragment;
 import com.example.cocodo.utils.RecyclerTaskListAdapter;
@@ -43,11 +44,12 @@ public class MainActivity
         AddTaskFragment.OnFragmentButtonClickListener,
         NavBarFragment.OnFragmentButtonClickListener,
         TaskListFragment.UpdaterRecViewList,
-        DetailsTaskFragment.OnFragmentButtonClickListener {
-    static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+        DetailsTaskFragment.OnFragmentButtonClickListener,
+        HeaderFragment.CharPieButtonClickListener {
+    static final Migration MIGRATION_4_5 = new Migration(4, 5) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
-            database.execSQL("CREATE TABLE IF NOT EXISTS `subtasks` (" + "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " + "`task_id` INTEGER NOT NULL, " + "`subtask_name` TEXT, " + "`subtask_desc` TEXT, " + "`subtask_time` TEXT, " + "`subtask_priority` INTEGER NOT NULL, " + "`isCompleted` INTEGER NOT NULL DEFAULT 0, " + "FOREIGN KEY(`task_id`) REFERENCES `tasks`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE" + ")");
+            database.execSQL("ALTER TABLE tasks ADD COLUMN completed_at TIMESTAMP");
         }
     };
     static RecyclerView recyclerView;
@@ -200,8 +202,8 @@ public class MainActivity
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    public void onCharPieButtonClick() {
+
     }
 
     private static class LoadDataTask extends AsyncTask<Void, Void, Void> {

@@ -4,7 +4,9 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.Relation;
+import androidx.room.TypeConverters;
 
+import java.sql.Date;
 import java.util.List;
 
 @Entity(tableName = "tasks")
@@ -27,6 +29,9 @@ public class Task {
     @ColumnInfo(name = "isCompleted")
     private int isCompleted;
 
+    @ColumnInfo(name = "completed_at")
+    @TypeConverters(Converters.class)
+    private Date completedAt;
     public Task(String taskName, String taskDesc, String taskTime) {
         this.taskName = taskName;
         this.taskDesc = taskDesc;
@@ -82,6 +87,11 @@ public class Task {
         this.isCompleted = isCompleted;
     }
 
+    public Date getCompletedAt() {
+        return completedAt;
+    }
 
-
+    public void setCompletedAt(Date completedAt) {
+        this.completedAt = completedAt;
+    }
 }

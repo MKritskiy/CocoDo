@@ -3,6 +3,7 @@ package com.example.cocodo.utils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,10 @@ public class RecyclerSubTaskListAdapter extends RecyclerView.Adapter<RecyclerSub
     private final Context mContext;
     private final RecyclerView recyclerView;
 
+    private int subTaskCheckedListSize;
+    private int subTaskAllListSize;
 
+    private final TextView textView;
     private OnItemClickListener listener;
 
     // Добавляем переменную OnItemClickListener
@@ -40,9 +44,17 @@ public class RecyclerSubTaskListAdapter extends RecyclerView.Adapter<RecyclerSub
 
     TaskDao taskDao;
 
-    public RecyclerSubTaskListAdapter(Context context, List<SubTask> subTaskList, RecyclerView recyclerView, TaskDao taskDao) {
+    public RecyclerSubTaskListAdapter(
+            Context context,
+            List<SubTask> subTaskList,
+            RecyclerView recyclerView,
+            TaskDao taskDao, TextView textView, int allTaskCount) {
         this.mContext = context;
         this.subTaskList = subTaskList;
+        this.textView = textView;
+        subTaskAllListSize = allTaskCount;
+        subTaskCheckedListSize = subTaskAllListSize- subTaskList.size();
+
         this.inflater = LayoutInflater.from(context);
         this.recyclerView = recyclerView;
         this.taskDao = taskDao;
@@ -112,6 +124,8 @@ public class RecyclerSubTaskListAdapter extends RecyclerView.Adapter<RecyclerSub
                     int completed = isChecked ? 1 : 0;
                     removedTask.setIsCompleted(completed);
                     updateTask(removedTask);
+                    subTaskCheckedListSize++;
+                    textView.setText(subTaskCheckedListSize + "/" + subTaskAllListSize);
                     notifyItemRemoved(pos);
                     showSnackbar(removedTask, pos, holder);
                 }
@@ -139,6 +153,8 @@ public class RecyclerSubTaskListAdapter extends RecyclerView.Adapter<RecyclerSub
                 removedTask.setIsCompleted(0);
                 updateTask(removedTask);
                 holder.checkBox.setChecked(false);
+                subTaskCheckedListSize--;
+                textView.setText(subTaskCheckedListSize + "/" + subTaskAllListSize);
             }
         };
 

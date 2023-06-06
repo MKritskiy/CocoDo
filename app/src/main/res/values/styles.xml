@@ -20,7 +20,7 @@
         <item name="android:windowExitAnimation">@anim/fade_out</item>
     </style>
 
-    <style name="CheckBoxStyle" parent="@android:style/Widget.CompoundButton.CheckBox">
+    <style name="MyCheckBoxStyle" parent="@android:style/Widget.CompoundButton.CheckBox">
         <item name="android:stateListAnimator">@anim/checkbox_draw_anim</item>
     </style>
 </resources>

@@ -11,7 +11,7 @@
         android:layout_height="32dp"
         android:layout_gravity="center_vertical"
         android:button="@drawable/checkbox_selector"
-        android:theme="@style/CheckBoxStyle"
+        android:theme="@style/MyCheckBoxStyle"
         />
 
     <LinearLayout

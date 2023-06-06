@@ -49,7 +49,7 @@ import java.util.concurrent.TimeUnit;
 
 public class DetailsTaskFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener,
-        TimePickerDialog.OnTimeSetListener {
+        TimePickerDialog.OnTimeSetListener  {
 
     public interface OnFragmentButtonClickListener {
         void addTaskButtonClick(int taskId);
@@ -74,12 +74,13 @@ public class DetailsTaskFragment extends DialogFragment
 
 
     private EditText taskNameEditText, descriptionEditText;
-    private TextView priority_textView, date_textView;
+    private TextView priority_textView, dateTextView, subtaskCountTextView;
     private Button deadlineButton, priorityButton, reminderButton, addButton, closeButton;
-    private LinearLayout priorityLayout;
+    private LinearLayout priorityLayout, dateLayout, subtaskHeader;
     private CheckBox checkBox;
-    ImageView priority_image;
+    ImageView priorityImage;
 
+    int subTaskCheckedListSize, subTaskAllListSize;
     private int day, month, year, hour, minute;
     private static int taskId;
     int dayFinal, monthFinal, yearFinal, hourFinal, minuteFinal;
@@ -121,14 +122,23 @@ public class DetailsTaskFragment extends DialogFragment
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.task_details_fragment, container, false);
         taskId = getArguments().getInt("taskId");
-        recyclerView = rootView.findViewById(R.id.recycler_view_details_subtasks);
         Log.d("TAG", String.valueOf(taskId));
         Context context = getContext().getApplicationContext();
+        recyclerView = rootView.findViewById(R.id.recycler_view_details_subtasks);
         taskNameEditText = rootView.findViewById(R.id.task_details_edit_text);
-        date_textView = rootView.findViewById(R.id.text_details_date);
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-
+        descriptionEditText = rootView.findViewById(R.id.edit_details_desc);
+        dateLayout = rootView.findViewById(R.id.task_details_date_layout);
+        dateTextView = rootView.findViewById(R.id.text_details_date);
         checkBox = rootView.findViewById(R.id.task_completing);
+        priorityImage = rootView.findViewById(R.id.priority_image);
+        priority_textView = rootView.findViewById(R.id.text_details_priority);
+        priorityLayout = (LinearLayout) rootView
+                .findViewById(R.id.task_details_priority_layout);
+        priorityButton = (Button) rootView.findViewById(R.id.details_priority_button);
+        addButton = (Button) rootView.findViewById(R.id.button_details_add_subtask);
+        subtaskHeader = rootView.findViewById(R.id.subtask_header);
+        subtaskCountTextView = rootView.findViewById(R.id.subtask_count_text_view);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(new Runnable() {
             @Override
             public void run() {
@@ -137,6 +147,11 @@ public class DetailsTaskFragment extends DialogFragment
                         .getDatabase(context)
                         .taskDao()
                         .getAllUncheckedSubTasks(taskId);
+                subTaskAllListSize = MyDatabase
+                        .getDatabase(context)
+                        .taskDao()
+                        .getAllSubTasks(taskId).size();
+                subTaskCheckedListSize = subTaskAllListSize-subTaskList.size();
                 currentTask = MyDatabase
                         .getDatabase(context)
                         .taskDao()
@@ -146,17 +161,13 @@ public class DetailsTaskFragment extends DialogFragment
                         context,
                         subTaskList,
                         recyclerView,
-                        MyDatabase.getDatabase(context).taskDao());
+                        MyDatabase.getDatabase(context).taskDao(), subtaskCountTextView, subTaskAllListSize);
                 recyclerView.setAdapter(adapter);
             }
         });
         executorService.shutdown();
 
-        priority_image = rootView.findViewById(R.id.priority_image);
-        priority_textView = rootView.findViewById(R.id.text_details_priority);
-        checkBox = rootView.findViewById(R.id.task_completing);
-        priorityLayout = (LinearLayout) rootView
-                .findViewById(R.id.task_details_priority_layout);
+
         Handler handler = new Handler();
         priorityLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,7 +184,6 @@ public class DetailsTaskFragment extends DialogFragment
                 }
             }
         });
-        priorityButton = (Button) rootView.findViewById(R.id.details_priority_button);
 
         priorityButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -191,23 +201,36 @@ public class DetailsTaskFragment extends DialogFragment
             }
         });
 
-        addButton = (Button) rootView.findViewById(R.id.button_details_add_subtask);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 fragmentButtonClickListener.addTaskButtonClick(getArguments().getInt("taskId"));
             }
         });
+        dateLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar calendar = Calendar.getInstance();
+                year = calendar.get(Calendar.YEAR);
+                month = calendar.get(Calendar.MONTH);
+                day = calendar.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), DetailsTaskFragment.this,
+                        year, month, day);
+                datePickerDialog.show();
+            }
+        });
         try {
             executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
             downloadPriority();
             taskNameEditText.setText(currentTask.getTaskName());
-            if (currentTask.getTaskTime()!=null)
-                date_textView.setText(currentTask.getTaskTime());
-            else {
-                LinearLayout dateLayout = rootView.findViewById(R.id.task_details_date_layout);
-                dateLayout.setVisibility(View.GONE);
-            }
+            if (currentTask.getTaskTime() != null)
+                dateTextView.setText(currentTask.getTaskTime());
+            if (currentTask.getTaskDesc()!=null)
+                descriptionEditText.setText(currentTask.getTaskDesc());
+            if (subTaskCheckedListSize <1)
+                subtaskHeader.setVisibility(View.GONE);
+            subtaskCountTextView.setText(subTaskCheckedListSize + "/" + subTaskAllListSize);
         } catch (InterruptedException ignored) {
         }
         return rootView;
@@ -234,7 +257,7 @@ public class DetailsTaskFragment extends DialogFragment
             @Override
             public void run() {
                 subTaskList = MyDatabase.getDatabase(context).taskDao().getAllUncheckedSubTasks(taskId);
-                adapter = new RecyclerSubTaskListAdapter(context, subTaskList, recyclerView, MyDatabase.getDatabase(context).taskDao());
+                adapter = new RecyclerSubTaskListAdapter(context, subTaskList, recyclerView, MyDatabase.getDatabase(context).taskDao(),subtaskCountTextView, subTaskAllListSize );
                 recyclerView.setAdapter(adapter);
             }
         }).start();
@@ -255,9 +278,14 @@ public class DetailsTaskFragment extends DialogFragment
                 MyDatabase.getDatabase(getContext()).taskDao().
                         insertSubTask(newSubTask);
                 subTaskList.add(newSubTask);
+                subTaskAllListSize++;
+                if (subTaskList.size()>0)
+                    subtaskHeader.setVisibility(View.VISIBLE);
+                subtaskCountTextView.setText(subTaskCheckedListSize + "/" + subTaskAllListSize);
             }
         }).start();
         adapter.notifyDataSetChanged();
+
     }
 
     public void setPriority(int priority) {
@@ -276,24 +304,25 @@ public class DetailsTaskFragment extends DialogFragment
     private void setPriorityImage(int priority) {
         switch (priority) {
             case 1:
-                priority_image.setImageResource(R.drawable.flag_red);
+                priorityImage.setImageResource(R.drawable.flag_red);
                 checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext().getApplicationContext(), R.color.coco_red)));
                 break;
             case 2:
-                priority_image.setImageResource(R.drawable.flag_green);
+                priorityImage.setImageResource(R.drawable.flag_green);
                 checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext().getApplicationContext(), R.color.green)));
                 break;
             case 3:
-                priority_image.setImageResource(R.drawable.flag_blue);
+                priorityImage.setImageResource(R.drawable.flag_blue);
                 checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext().getApplicationContext(), R.color.blue)));
                 break;
             default:
-                priority_image.setImageResource(R.drawable.flag_red);
+                priorityImage.setImageResource(R.drawable.flag_red);
                 checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext().getApplicationContext(), R.color.black)));
-
                 break;
         }
     }
+
+
 
     @Override
     public void onStart() {
@@ -311,18 +340,22 @@ public class DetailsTaskFragment extends DialogFragment
     public void onPause() {
         super.onPause();
         Log.i("TAG", "onPause: ");
-        if (taskNameEditText.getText().toString()!=currentTask.getTaskName()){
-            currentTask.setTaskName(taskNameEditText.getText().toString());
-            currentTask.setIsCompleted(checkBox.isChecked()?1:0);
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
-            executorService.execute(new Runnable() {
-                @Override
-                public void run() {
-                    MyDatabase.getDatabase(getContext().getApplicationContext()).taskDao().update(currentTask);
-                }
-            });
-        }
-        fragmentButtonClickListener.updateTaskRecView();
+
+        currentTask.setIsCompleted(checkBox.isChecked() ? 1 : 0);
+        currentTask.setTaskName(taskNameEditText.getText().toString());
+        currentTask.setTaskDesc(descriptionEditText.getText().toString());
+        currentTask.setTaskTime(dateTextView.getText().toString());
+
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                MyDatabase.getDatabase(getContext().getApplicationContext()).taskDao().update(currentTask);
+                fragmentButtonClickListener.updateTaskRecView();
+            }
+        });
+
         dismiss();
         getParentFragmentManager().beginTransaction().remove(getParentFragmentManager().findFragmentById(android.R.id.content)).commit();
 
@@ -350,9 +383,9 @@ public class DetailsTaskFragment extends DialogFragment
         deadline = dayFinal + " " +
                 monthNames[monthFinal - 1] + " " +
                 yearFinal + " " +
-                hourFinal + ":" +
-                minuteFinal;
-        deadlineButton.setText(deadline);
+                (hourFinal < 10 ? "0" + hourFinal : hourFinal) + ":" +
+                (minuteFinal < 10 ? "0" + minuteFinal : minuteFinal);
+        dateTextView.setText(deadline);
     }
 
 }
