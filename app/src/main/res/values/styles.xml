@@ -38,8 +38,8 @@
         <item name="background">@color/back_gray</item>
         <item name="colorOnPrimary">@color/coco_red</item>
     </style>
-    <style name="ButtonStyle" parent="@style/Widget.Material3.Button.TonalButton">
-        <item name="rippleColor">@color/riple_color</item>
+    <style name="ButtonStyle" parent="@style/Widget.Material3.Button">
+        <item name="rippleColor">@color/my_ripple_color</item>
     </style>
 
 </resources>

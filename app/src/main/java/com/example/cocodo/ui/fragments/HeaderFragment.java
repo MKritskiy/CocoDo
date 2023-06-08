@@ -2,6 +2,7 @@ package com.example.cocodo.ui.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,10 +40,18 @@ public class HeaderFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.header_fragment, container, false);
         charPieButton = view.findViewById(R.id.charPieButton);
+        Handler handler = new Handler();
         charPieButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 charPieButtonClickListener.onCharPieButtonClick();
+                charPieButton.setClickable(false);
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        charPieButton.setClickable(true);
+                    }
+                }, 300);
             }
         });
         return view;

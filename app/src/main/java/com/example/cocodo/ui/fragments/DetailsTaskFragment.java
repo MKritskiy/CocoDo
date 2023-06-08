@@ -270,7 +270,7 @@ public class DetailsTaskFragment extends DialogFragment
                         public void run() {
                             priorityLayout.setClickable(true);
                         }
-                    }, 200);
+                    }, 300);
                 }
             }
         });

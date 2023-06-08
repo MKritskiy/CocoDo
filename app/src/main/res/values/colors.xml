@@ -8,7 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="coco_red">#CA2727</color>
-    <color name="riple_color">#AEAEAE</color>
+    <color name="my_ripple_color">#AEAEAE</color>
     <color name="back_gray">#F3F3F3</color>
     <color name="checked_color">#CA2727</color>
     <color name="unchecked_color">#FF000000</color>
