@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -103,7 +104,7 @@ public class AddTaskFragment
                 month = calendar.get(Calendar.MONTH);
                 day = calendar.get(Calendar.DAY_OF_MONTH);
 
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),AddTaskFragment.this,
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), R.style.DatePickerTheme,AddTaskFragment.this,
                         year, month, day);
                 datePickerDialog.show();
             }
@@ -166,7 +167,8 @@ public class AddTaskFragment
         hour = calendar.get(Calendar.HOUR_OF_DAY);
         minute = calendar.get(Calendar.MINUTE);
 
-        TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), AddTaskFragment.this,
+        ContextThemeWrapper themedContext = new ContextThemeWrapper(getContext(), R.style.RedTimePickerTheme);
+        TimePickerDialog timePickerDialog = new TimePickerDialog(themedContext, AddTaskFragment.this,
                 hour, minute, DateFormat.is24HourFormat(getContext()));
         timePickerDialog.show();
     }

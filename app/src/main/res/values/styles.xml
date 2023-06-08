@@ -24,7 +24,22 @@
         <item name="android:stateListAnimator">@anim/checkbox_draw_anim</item>
     </style>
 
-    <style name="RedTimePickerTheme" parent="@style/Theme.AppCompat.Light.Dialog">
-        <item name="colorAccent">#FF0000</item>
+    <style name="RedTimePickerTheme" parent="@android:style/Widget.Material.Light.TimePicker">
+        <item name="android:timePickerMode">spinner</item>
+        <item name="colorAccent">@color/coco_red</item>
+        <item name="android:headerBackground">@color/coco_red</item>
+        <item name="android:numbersTextColor">#ff000000</item>
+        <item name="android:numbersBackgroundColor">#ffdddddd</item>
+        <item name="background">@color/back_gray</item>
+
     </style>
+    <style name="DatePickerTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/coco_red</item>
+        <item name="background">@color/back_gray</item>
+        <item name="colorOnPrimary">@color/coco_red</item>
+    </style>
+    <style name="ButtonStyle" parent="@style/Widget.Material3.Button.TonalButton">
+        <item name="rippleColor">@color/riple_color</item>
+    </style>
+
 </resources>

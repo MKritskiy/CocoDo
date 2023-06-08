@@ -52,7 +52,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/rounded_corners"
+                android:background="@drawable/custom_bordered_ripple"
                 android:orientation="vertical"
                 android:padding="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -64,7 +64,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="8dp"
-                    android:background="@drawable/rounded_corners"
+                    android:background="@drawable/custom_bordered_ripple"
                     android:gravity="center_vertical">
 
                     <CheckBox
@@ -96,7 +96,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="8dp"
-                    android:background="@drawable/rounded_corners"
+                    android:background="@drawable/custom_bordered_ripple"
                     android:gravity="center_vertical">
 
                     <ImageView
@@ -125,7 +125,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="8dp"
-                    android:background="@drawable/rounded_corners"
+                    android:background="@drawable/custom_bordered_ripple"
                     android:gravity="center_vertical">
 
                     <ImageView
@@ -161,7 +161,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="8dp"
-                    android:background="@drawable/rounded_corners"
+                    android:background="@drawable/custom_bordered_ripple"
                     android:gravity="center_vertical">
 
                     <ImageView
@@ -201,7 +201,7 @@
 
                     <Button
                         android:id="@+id/details_priority_button"
-                        style="@style/Widget.Material3.Button"
+                        style="@style/ButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="32dp"
                         android:layout_marginEnd="8dp"
@@ -219,7 +219,7 @@
 
                     <Button
                         android:id="@+id/deadline_button2"
-                        style="@style/Widget.Material3.Button"
+                        style="@style/ButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="32dp"
                         android:layout_weight="1"

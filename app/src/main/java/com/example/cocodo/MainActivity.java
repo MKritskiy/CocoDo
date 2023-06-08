@@ -167,9 +167,24 @@ public class MainActivity
                 popupWindow.dismiss();
             }
         });
+
         backgroundView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                backgroundPopupWindow.dismiss();
+                popupWindow.dismiss();
+            }
+        });
+        backgroundPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                backgroundPopupWindow.dismiss();
+                popupWindow.dismiss();
+            }
+        });
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
                 backgroundPopupWindow.dismiss();
                 popupWindow.dismiss();
             }

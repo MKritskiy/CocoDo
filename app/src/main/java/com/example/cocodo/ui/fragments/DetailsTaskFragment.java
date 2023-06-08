@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -304,7 +305,7 @@ public class DetailsTaskFragment extends DialogFragment
                 month = calendar.get(Calendar.MONTH);
                 day = calendar.get(Calendar.DAY_OF_MONTH);
 
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), DetailsTaskFragment.this,
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), R.style.DatePickerTheme,DetailsTaskFragment.this,
                         year, month, day);
                 datePickerDialog.show();
             }
@@ -516,7 +517,8 @@ public class DetailsTaskFragment extends DialogFragment
         hour = calendar.get(Calendar.HOUR_OF_DAY);
         minute = calendar.get(Calendar.MINUTE);
 
-        TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), DetailsTaskFragment.this,
+        ContextThemeWrapper themedContext = new ContextThemeWrapper(getContext(), R.style.RedTimePickerTheme);
+        TimePickerDialog timePickerDialog = new TimePickerDialog(themedContext, DetailsTaskFragment.this,
                 hour, minute, DateFormat.is24HourFormat(getContext()));
         timePickerDialog.show();
     }
