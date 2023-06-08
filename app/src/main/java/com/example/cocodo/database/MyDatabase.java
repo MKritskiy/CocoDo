@@ -21,9 +21,11 @@ import com.example.cocodo.utils.Task;
 @TypeConverters({Converters.class})
 public abstract class MyDatabase extends RoomDatabase {
     public abstract TaskDao taskDao();
-    public static final Migration MIGRATION_5_6 = new Migration(5, 6) {
+    public static final Migration MIGRATION_5_6 = new Migration(4, 6) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE tasks ADD COLUMN completed_at INTEGER");
+            database.execSQL("UPDATE tasks SET completed_at = datetime(completed_at/1000, 'unixepoch') WHERE completed_at IS NOT NULL");
             // изменяем тип данных
             database.execSQL("ALTER TABLE tasks RENAME TO temp_tasks");
             database.execSQL("CREATE TABLE tasks (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, task_name TEXT, task_desc TEXT, task_time INTEGER NOT NULL, task_priority INTEGER NOT NULL, isCompleted INTEGER NOT NULL, completed_at INTEGER)");
@@ -41,7 +43,7 @@ public abstract class MyDatabase extends RoomDatabase {
             synchronized (MyDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context,
-                                    MyDatabase.class, "my-database").addMigrations(MIGRATION_5_6)
+                                    MyDatabase.class, "my_database").addMigrations(MIGRATION_5_6)
                             .build();
                 }
             }
