@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.format.DateFormat;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
@@ -40,6 +41,7 @@ public class AddTaskFragment
     public interface OnFragmentButtonClickListener{
         void sendTaskButtonClick(String taskName, String taskDescription, String taskTime);
         void sendSubTaskButtonClick(int taskId, String subTaskName, String subTaskDescription, String subTaskTime);
+        void priorityButtonClick(View view);
     }
 
 
@@ -107,6 +109,22 @@ public class AddTaskFragment
                 DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), R.style.DatePickerTheme,AddTaskFragment.this,
                         year, month, day);
                 datePickerDialog.show();
+            }
+        });
+        Handler handler = new Handler();
+        priorityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (priorityButton.isClickable()) {
+                    priorityButton.setClickable(false);
+                    fragmentButtonClickListener.priorityButtonClick(rootView);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            priorityButton.setClickable(true);
+                        }
+                    }, 200);
+                }
             }
         });
         // Устанавливаем слушатель на кнопку "Отправить"

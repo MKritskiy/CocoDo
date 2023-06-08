@@ -10,23 +10,33 @@
         android:id="@+id/task_name_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Название задачи" />
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:fontFamily="@font/inter"
+        android:hint="Название задачи"
+        android:paddingHorizontal="16dp" />
 
     <EditText
         android:id="@+id/description_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Описание" />
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:fontFamily="@font/inter"
+        android:hint="Описание"
+        android:paddingHorizontal="16dp" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:layout_marginTop="8dp"
+        android:gravity="fill_horizontal"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp">
 
         <Button
             android:id="@+id/deadline_button"
-            style="@style/Widget.Material3.Button"
+            style="@style/ButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="32dp"
             android:backgroundTint="#FFFFFF"
@@ -42,7 +52,7 @@
 
         <Button
             android:id="@+id/priority_button"
-            style="@style/Widget.Material3.Button"
+            style="@style/ButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="32dp"
             android:layout_marginStart="8dp"
@@ -60,7 +70,7 @@
 
         <Button
             android:id="@+id/remind_button"
-            style="@style/Widget.Material3.Button"
+            style="@style/ButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="32dp"
             android:backgroundTint="#FFFFFF"
@@ -80,6 +90,10 @@
         android:id="@+id/send_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
         android:backgroundTint="#CA2727"
         android:fontFamily="@font/inter_semibold"
         android:text="Отправить"

@@ -11,11 +11,8 @@ public class UnstoppableCalculator {
     private int currentStreak = 0;
     private Date startDate = null;
     private Date endDate = null;
-
     private Date currentStartDate = null;
     private Date currentEndDate = null;
-
-
     public UnstoppableCalculator calculate(TaskDao taskDao) {
         List<Task> completedTasks = taskDao.getCompletedTasksSortedByDate();
         for (int i = 0; i < completedTasks.size(); i++) {
@@ -64,7 +61,6 @@ public class UnstoppableCalculator {
                         .atZone(ZoneId.systemDefault())
                         .toLocalDate());
     }
-
     public int getMaxStreak() {
         return maxStreak;
     }
@@ -80,6 +76,4 @@ public class UnstoppableCalculator {
     public Date getEndDate() {
         return endDate;
     }
-
-
 }

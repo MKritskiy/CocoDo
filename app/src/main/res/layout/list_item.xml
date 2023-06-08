@@ -4,7 +4,6 @@
     android:layout_height="wrap_content"
     android:padding="16dp"
     android:background="@drawable/custom_bordered_ripple">
-
     <CheckBox
         android:id="@+id/task_completing"
         android:layout_width="32dp"
@@ -13,7 +12,6 @@
         android:button="@drawable/checkbox_selector"
         android:theme="@style/MyCheckBoxStyle"
         />
-
     <LinearLayout
         android:id="@+id/taskLayout"
         android:layout_width="0dp"
@@ -22,8 +20,6 @@
         android:layout_marginStart="8dp"
         android:layout_weight="1"
         android:orientation="vertical">
-
-
         <TextView
             android:id="@+id/task_name"
             android:layout_width="wrap_content"
@@ -44,12 +40,5 @@
             android:textSize="14sp" />
 
     </LinearLayout>
-
-    <CheckBox
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_gravity="center_vertical"
-        android:button="@drawable/arrow"
-        app:buttonIcon="@drawable/arrow" />
 
 </LinearLayout>

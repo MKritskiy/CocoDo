@@ -128,16 +128,10 @@ public class HistoryFragment extends Fragment {
                                             @Override
                                             public void run() {
                                                 MyDatabase.getDatabase(context).taskDao().deleteTask(swipedTask);
-                                                // обновляем список на основном потоке
-                                                ((Activity)context).runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        taskList.remove(swipedTaskPosition);
-                                                        adapter.notifyItemRemoved(swipedTaskPosition);
-                                                    }
-                                                });
                                             }
                                         });
+                                        taskList.remove(swipedTaskPosition);
+                                        adapter.notifyItemRemoved(swipedTaskPosition);
                                     }
                                 });
                 itemTouchHelper.attachToRecyclerView(recyclerView);
