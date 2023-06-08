@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.example.cocodo.alarms.TaskNotificationService;
 import com.example.cocodo.database.MyDatabase;
 import com.example.cocodo.ui.fragments.AddTaskFragment;
 import com.example.cocodo.ui.fragments.BackgroundFragment;
@@ -38,8 +39,13 @@ import com.example.cocodo.utils.RecyclerTaskListAdapter;
 import com.example.cocodo.utils.SpacesItemDecoration;
 import com.example.cocodo.utils.Task;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -68,22 +74,7 @@ public class MainActivity
     private static List<Task> taskList = new ArrayList<>();
     String sharedText;
 
-    @Override
-    public void onBackPressed() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
 
-        // ищем последний добавленный фрагмент в стек обратного вызова
-        Fragment lastFragment = fragmentManager.findFragmentById(android.R.id.content);
-
-        // если фрагмент существует и он не является корневым фрагментом,
-        // то закрываем его с помощью метода popBackStack()
-        if (lastFragment != null && fragmentManager.getBackStackEntryCount() > 0) {
-            fragmentManager.popBackStack();
-        } else {
-            // иначе вызываем стандартную обработку нажатия кнопки "назад"
-            super.onBackPressed();
-        }
-    }
 
     public static void onTaskListItemClickListener(View view, Task task) {
         DetailsTaskFragment lastFragment = (DetailsTaskFragment) fragmentManager.findFragmentByTag("TaskDetailsFragment");
@@ -106,7 +97,8 @@ public class MainActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         fragmentManager = getSupportFragmentManager();
-
+        Intent intent = new Intent(this, TaskNotificationService.class);
+        startService(intent);
     }
 
     @Override
@@ -153,7 +145,7 @@ public class MainActivity
         View layout = getLayoutInflater().inflate(R.layout.popup_window, null);
         popupWindow.setContentView(layout);
         popupWindow.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
-        popupWindow.setHeight(WindowManager.LayoutParams.MATCH_PARENT);
+        popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
 
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popupWindow.setFocusable(true);
@@ -189,26 +181,41 @@ public class MainActivity
                 popupWindow.dismiss();
             }
         });
-        popupWindow.showAtLocation(view, Gravity.CENTER | Gravity.BOTTOM, 0, 0);
         LinearLayout[] layouts = new LinearLayout[]{layout.findViewById(R.id.option1), layout.findViewById(R.id.option2), layout.findViewById(R.id.option3), layout.findViewById(R.id.option4)};
         for (int i = 0; i < layouts.length; i++) {
             int finalI = i;
             layouts[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DetailsTaskFragment fragment = (DetailsTaskFragment) fragmentManager.findFragmentByTag("TaskDetailsFragment");
-                    fragment.setPriority(finalI + 1);
+                    Fragment fragment = (DetailsTaskFragment) fragmentManager.findFragmentByTag("TaskDetailsFragment");
+                    if (fragment==null){
+                        fragment =  (AddTaskFragment) fragmentManager.findFragmentByTag("AddTaskFragment");
+                        ((AddTaskFragment)fragment).setPriority(finalI + 1);
+                    } else
+                        ((DetailsTaskFragment)fragment).setPriority(finalI + 1);
                     backgroundPopupWindow.dismiss();
                     popupWindow.dismiss();
                 }
             });
         }
+        popupWindow.showAtLocation(view, Gravity.CENTER | Gravity.BOTTOM, 0, 0);
+
     }
 
     @Override
-    public void sendTaskButtonClick(String taskName, String taskDesc, String taskTime) {
+    public void sendTaskButtonClick(String taskName, String taskDesc, String taskTime, int taskPriority) {
         recyclerView = findViewById(R.id.taskRecyclerList);
-        new LoadDataTask(this, new Task(taskName, taskDesc, taskTime)).execute();
+        long taskTimeLong;
+        DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm", new Locale("ru"));
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
+        try {
+            java.util.Date utilDate = df.parse(taskTime.replace(".", ""));
+            taskTimeLong = new java.sql.Date(utilDate.getTime()).getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            taskTimeLong = new java.sql.Date(0).getTime();
+        }
+        new LoadDataTask(this, new Task(taskName, taskDesc, taskTimeLong, taskPriority)).execute();
     }
 
     @Override

@@ -5,8 +5,10 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateFormat;
@@ -25,13 +27,17 @@ import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.cocodo.R;
+import com.example.cocodo.database.MyDatabase;
 
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class AddTaskFragment
         extends DialogFragment
@@ -39,7 +45,7 @@ public class AddTaskFragment
         TimePickerDialog.OnTimeSetListener {
 
     public interface OnFragmentButtonClickListener{
-        void sendTaskButtonClick(String taskName, String taskDescription, String taskTime);
+        void sendTaskButtonClick(String taskName, String taskDescription, String taskTime, int taskPriority);
         void sendSubTaskButtonClick(int taskId, String subTaskName, String subTaskDescription, String subTaskTime);
         void priorityButtonClick(View view);
     }
@@ -61,7 +67,7 @@ public class AddTaskFragment
     private Button deadlineButton, priorityButton, reminderButton, sendButton;
     private int day, month, year, hour, minute;
     int dayFinal, monthFinal, yearFinal, hourFinal, minuteFinal;
-
+    int taskPriority=4;
     private String taskName, description, deadline;
     String[] monthNames = new DateFormatSymbols(new Locale("ru")).getShortMonths();
     @NonNull
@@ -95,7 +101,6 @@ public class AddTaskFragment
         descriptionEditText = rootView.findViewById(R.id.description_edit_text);
         deadlineButton = rootView.findViewById(R.id.deadline_button);
         priorityButton = rootView.findViewById(R.id.priority_button);
-        reminderButton = rootView.findViewById(R.id.remind_button);
         sendButton = rootView.findViewById(R.id.send_button);
         boolean isSubTask = getArguments().getBoolean("isSubTask");
         deadlineButton.setOnClickListener(new View.OnClickListener() {
@@ -134,12 +139,10 @@ public class AddTaskFragment
                 // Обработка нажатия кнопки "Отправить"
                 taskName = taskNameEditText.getText().toString();
                 description = descriptionEditText.getText().toString();
-
-                int priority = 0; // Пока не реализовано
                 boolean hasReminder = false; // Пока не реализовано
                 if (!taskNameEditText.getText().toString().isEmpty()){
                     if (!isSubTask)
-                        fragmentButtonClickListener.sendTaskButtonClick(taskName, description, deadline);
+                        fragmentButtonClickListener.sendTaskButtonClick(taskName, description, deadline, taskPriority);
                     else
                         fragmentButtonClickListener.sendSubTaskButtonClick(getArguments().getInt("taskId"), taskName, description, deadline);
                     onPause();
@@ -148,6 +151,33 @@ public class AddTaskFragment
         });
 
         return rootView;
+    }
+
+    public void setPriority(int priority) {
+        priorityButton.setText("Приоритет "+ priority);
+        setPriorityImage(priority);
+        taskPriority=priority;
+    }
+    private void setPriorityImage(int priority) {
+        Drawable newDrawable;
+        switch (priority) {
+            case 1:
+                newDrawable = getResources().getDrawable(R.drawable.flag_red); // вставьте свой ресурс с изображением вместо new_image
+                priorityButton.setCompoundDrawablesWithIntrinsicBounds(newDrawable, null, null, null);
+                break;
+            case 2:
+                newDrawable = getResources().getDrawable(R.drawable.flag_green); // вставьте свой ресурс с изображением вместо new_image
+                priorityButton.setCompoundDrawablesWithIntrinsicBounds(newDrawable, null, null, null);
+                break;
+            case 3:
+                newDrawable = getResources().getDrawable(R.drawable.flag_blue); // вставьте свой ресурс с изображением вместо new_image
+                priorityButton.setCompoundDrawablesWithIntrinsicBounds(newDrawable, null, null, null);
+                break;
+            default:
+                priorityButton.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                priorityButton.setText("Приоритет");
+                break;
+        }
     }
     @Override
     public void onStart() {
@@ -197,8 +227,8 @@ public class AddTaskFragment
         deadline = dayFinal + " " +
                 monthNames[monthFinal-1] +" " +
                 yearFinal + " "+
-                hourFinal+ ":" +
-                minuteFinal;
+                (hourFinal < 10 ? "0" + hourFinal : hourFinal) + ":" +
+                (minuteFinal < 10 ? "0" + minuteFinal : minuteFinal);
         deadlineButton.setText(deadline);
     }
 

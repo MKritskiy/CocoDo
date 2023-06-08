@@ -1,4 +1,8 @@
 package com.example.cocodo.database;
+import android.annotation.SuppressLint;
+import android.os.AsyncTask;
+
+import androidx.annotation.WorkerThread;
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -14,6 +18,10 @@ import java.util.List;
 
 @Dao
 public interface TaskDao {
+    @Query("SELECT * FROM tasks WHERE isCompleted = 0 AND task_time >= :currentTimestamp AND task_time < :nextDayTimestamp")
+    List<Task> getTasksDueWithin24Hours(long currentTimestamp, long nextDayTimestamp);
+    // Define AsyncTask inner class
+
     @Query("SELECT * FROM tasks")
     LiveData<List<Task>> getAllTasksObservable();
     @Query("SELECT * FROM tasks")

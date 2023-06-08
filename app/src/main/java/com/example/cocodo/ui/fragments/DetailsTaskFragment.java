@@ -327,8 +327,8 @@ public class DetailsTaskFragment extends DialogFragment
             downloadPriority();
             taskNameEditText.setText(currentTask.getTaskName());
             checkBox.setChecked(currentTask.getIsCompleted() > 0);
-            if (currentTask.getTaskTime() != null)
-                dateTextView.setText(currentTask.getTaskTime());
+            if (currentTask.getTaskTimeInString() != null)
+                dateTextView.setText(currentTask.getTaskTimeInString());
             if (currentTask.getTaskDesc() != null)
                 descriptionEditText.setText(currentTask.getTaskDesc());
             if (subTaskAllListSize < 1)

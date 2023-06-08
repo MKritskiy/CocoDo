@@ -160,7 +160,6 @@
                     android:id="@+id/task_details_priority_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="8dp"
                     android:background="@drawable/custom_bordered_ripple"
                     android:gravity="center_vertical">
 
@@ -204,6 +203,7 @@
                         style="@style/ButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="32dp"
+                        android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
                         android:layout_weight="1"
                         android:backgroundTint="#FFFFFF"
@@ -217,22 +217,6 @@
                         app:strokeColor="#80000000"
                         app:strokeWidth="1dp" />
 
-                    <Button
-                        android:id="@+id/deadline_button2"
-                        style="@style/ButtonStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="32dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="#FFFFFF"
-                        android:fontFamily="@font/inter_semibold"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:text="Напоминание"
-                        android:textAlignment="center"
-                        android:textColor="#000000"
-                        android:textSize="12sp"
-                        app:strokeColor="#80000000"
-                        app:strokeWidth="1dp" />
                 </LinearLayout>
 
             </LinearLayout>

@@ -3,15 +3,10 @@ package com.example.cocodo.utils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.drawable.AnimatedVectorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -90,7 +85,7 @@ public class RecyclerTaskListAdapter extends RecyclerView.Adapter<RecyclerTaskLi
 
     private void setupNameAndTimeText(ViewHolder holder, Task task) {
         holder.textNameView.setText(task.getTaskName());
-        holder.textTimeView.setText(task.getTaskTime());
+        holder.textTimeView.setText(task.getTaskTimeInString());
     }
 
     private CompoundButton.OnCheckedChangeListener createCheckedChangeListener(ViewHolder holder, Task currentTask) {
