@@ -20,9 +20,8 @@
         android:name="com.example.cocodo.ui.fragments.TaskListFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="-24dp"
         android:layout_weight="1"
-        app:layout_constraintBottom_toTopOf="@+id/navBarFragment"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/headerFragment"
         tools:layout="@layout/task_list_fragment" />
 
@@ -30,7 +29,7 @@
         android:id="@+id/navBarFragment"
         android:name="com.example.cocodo.ui.fragments.NavBarFragment"
         android:layout_width="match_parent"
-        android:layout_height="88dp"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:layout="@layout/nav_bar_fragment" />
 

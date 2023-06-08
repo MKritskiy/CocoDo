@@ -23,4 +23,8 @@
     <style name="MyCheckBoxStyle" parent="@android:style/Widget.CompoundButton.CheckBox">
         <item name="android:stateListAnimator">@anim/checkbox_draw_anim</item>
     </style>
+
+    <style name="RedTimePickerTheme" parent="@style/Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">#FF0000</item>
+    </style>
 </resources>

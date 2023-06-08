@@ -1,4 +1,5 @@
 package com.example.cocodo.database;
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -14,11 +15,13 @@ import java.util.List;
 
 @Dao
 public interface TaskDao {
-
+    @Query("SELECT * FROM tasks")
+    LiveData<List<Task>> getAllTasksObservable();
     @Query("SELECT * FROM tasks")
     List<Task> getAll();
     @Query("SELECT * FROM tasks WHERE isCompleted = 0")
     List<Task> getAllUnchecked();
+
     @Query("SELECT * FROM tasks WHERE isCompleted = 0 ORDER BY task_priority ASC ")
     List<Task> getAllUncheckedTasksSortedByPriority();
     @Insert
@@ -32,6 +35,8 @@ public interface TaskDao {
 
     @Query("DELETE FROM tasks")
     void deleteAllTasks();
+    @Delete
+    void deleteTask(Task task);
 
     @Insert
     void insertSubTask(SubTask subTask);
@@ -48,6 +53,8 @@ public interface TaskDao {
 
     @Query("SELECT * FROM subtasks WHERE task_id = :taskId")
     List<SubTask> getAllSubTasks(int taskId);
+    @Query("SELECT * FROM subtasks WHERE task_id = :taskId")
+    LiveData<List<SubTask>> getAllSubTasksObservable(int taskId);
     @Query("SELECT * FROM subtasks WHERE task_id=:taskId AND isCompleted = 0")
     List<SubTask> getAllUncheckedSubTasks(int taskId);
     @Query("SELECT * FROM subtasks WHERE task_id=:taskId AND isCompleted = 1")

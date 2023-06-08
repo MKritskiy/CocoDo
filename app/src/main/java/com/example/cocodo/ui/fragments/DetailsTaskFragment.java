@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -12,6 +13,7 @@ import android.os.Handler;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,10 +32,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocodo.R;
 import com.example.cocodo.database.MyDatabase;
+import com.example.cocodo.database.TaskDao;
 import com.example.cocodo.utils.RecyclerSubTaskListAdapter;
 import com.example.cocodo.utils.SpacesItemDecoration;
 import com.example.cocodo.utils.SubTask;
@@ -43,13 +48,16 @@ import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class DetailsTaskFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener,
-        TimePickerDialog.OnTimeSetListener  {
+        TimePickerDialog.OnTimeSetListener {
+
+    private ItemTouchHelper itemCheckedTouchHelper;
 
     public interface OnFragmentButtonClickListener {
         void addTaskButtonClick(int taskId);
@@ -75,8 +83,8 @@ public class DetailsTaskFragment extends DialogFragment
 
     private EditText taskNameEditText, descriptionEditText;
     private TextView priority_textView, dateTextView, subtaskCountTextView;
-    private Button deadlineButton, priorityButton, reminderButton, addButton, closeButton;
-    private LinearLayout priorityLayout, dateLayout, subtaskHeader;
+    private Button deadlineButton, priorityButton, reminderButton, addButton, closeButton, detailsWrapButton;
+    private LinearLayout priorityLayout, dateLayout, subtaskHeader, detailsSubTaskList;
     private CheckBox checkBox;
     ImageView priorityImage;
 
@@ -88,10 +96,10 @@ public class DetailsTaskFragment extends DialogFragment
     private String taskName, description, deadline, priority_text;
     String[] monthNames = new DateFormatSymbols(new Locale("ru")).getShortMonths();
 
-    private static List<SubTask> subTaskList;
+    private static List<SubTask> subTaskList, subCheckedTaskList;
     private static Task currentTask;
-    private static RecyclerView recyclerView;
-    public static RecyclerSubTaskListAdapter adapter;
+    private static RecyclerView recyclerView, checkedRecView;
+    public static RecyclerSubTaskListAdapter adapter, checkedAdapter;
 
     @NonNull
     @Override
@@ -117,12 +125,16 @@ public class DetailsTaskFragment extends DialogFragment
         return dialog;
     }
 
+    private TaskDao taskDao;
+    ItemTouchHelper itemTouchHelper;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.task_details_fragment, container, false);
+
+
         taskId = getArguments().getInt("taskId");
-        Log.d("TAG", String.valueOf(taskId));
         Context context = getContext().getApplicationContext();
         recyclerView = rootView.findViewById(R.id.recycler_view_details_subtasks);
         taskNameEditText = rootView.findViewById(R.id.task_details_edit_text);
@@ -138,6 +150,9 @@ public class DetailsTaskFragment extends DialogFragment
         addButton = (Button) rootView.findViewById(R.id.button_details_add_subtask);
         subtaskHeader = rootView.findViewById(R.id.subtask_header);
         subtaskCountTextView = rootView.findViewById(R.id.subtask_count_text_view);
+        checkedRecView = rootView.findViewById(R.id.recycler_view_details_checked_subtasks);
+        detailsWrapButton = rootView.findViewById(R.id.details_wrap_button);
+        detailsSubTaskList = rootView.findViewById(R.id.details_sub_task_list);
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(new Runnable() {
             @Override
@@ -147,26 +162,100 @@ public class DetailsTaskFragment extends DialogFragment
                         .getDatabase(context)
                         .taskDao()
                         .getAllUncheckedSubTasks(taskId);
+
                 subTaskAllListSize = MyDatabase
                         .getDatabase(context)
                         .taskDao()
                         .getAllSubTasks(taskId).size();
-                subTaskCheckedListSize = subTaskAllListSize-subTaskList.size();
+                subTaskCheckedListSize = subTaskAllListSize - subTaskList.size();
                 currentTask = MyDatabase
                         .getDatabase(context)
                         .taskDao()
                         .getTaskById(taskId);
-                Log.d("TAG", currentTask.getTaskName());
                 adapter = new RecyclerSubTaskListAdapter(
                         context,
                         subTaskList,
                         recyclerView,
                         MyDatabase.getDatabase(context).taskDao(), subtaskCountTextView, subTaskAllListSize);
                 recyclerView.setAdapter(adapter);
+                subCheckedTaskList = MyDatabase
+                        .getDatabase(context)
+                        .taskDao()
+                        .getAllCheckedSubTasks(taskId);
+                checkedAdapter = new RecyclerSubTaskListAdapter(
+                        context,
+                        subCheckedTaskList,
+                        checkedRecView,
+                        MyDatabase.getDatabase(context).taskDao(), subtaskCountTextView, subTaskAllListSize);
+                checkedRecView.setAdapter(checkedAdapter);
+
+                taskDao = MyDatabase.getDatabase(context).taskDao();
+                itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
+                        0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+                    @Override
+                    public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                        int swipedTaskPosition = viewHolder.getAdapterPosition();
+                        SubTask swipedTask = subTaskList.get(swipedTaskPosition);
+
+                        Executor executor = Executors.newSingleThreadExecutor();
+                        executor.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                MyDatabase.getDatabase(context).taskDao().deleteSubTask(swipedTask);
+                                subTaskList = MyDatabase
+                                        .getDatabase(context)
+                                        .taskDao()
+                                        .getAllUncheckedSubTasks(taskId);
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        adapter.notifyItemRemoved(swipedTaskPosition);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+                itemCheckedTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
+                        0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+                    @Override
+                    public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                        int swipedTaskPosition = viewHolder.getAdapterPosition();
+                        SubTask swipedTask = subCheckedTaskList.get(swipedTaskPosition);
+
+                        Executor executor = Executors.newSingleThreadExecutor();
+                        executor.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                MyDatabase.getDatabase(context).taskDao().deleteSubTask(swipedTask);
+                                subCheckedTaskList = MyDatabase
+                                        .getDatabase(context)
+                                        .taskDao()
+                                        .getAllCheckedSubTasks(taskId);
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        checkedAdapter.notifyItemRemoved(swipedTaskPosition);
+                                    }
+                                });
+                            }
+                        });
+
+                    }
+                });
             }
         });
         executorService.shutdown();
-
 
         Handler handler = new Handler();
         priorityLayout.setOnClickListener(new View.OnClickListener() {
@@ -220,17 +309,38 @@ public class DetailsTaskFragment extends DialogFragment
                 datePickerDialog.show();
             }
         });
+        detailsWrapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (detailsSubTaskList.getVisibility() == View.GONE) {
+                    detailsSubTaskList.setVisibility(View.VISIBLE);
+                    detailsWrapButton.setText("Свернуть");
+                } else {
+                    detailsSubTaskList.setVisibility(View.GONE);
+                    detailsWrapButton.setText("Подробнее");
+                }
+            }
+        });
         try {
             executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
             downloadPriority();
             taskNameEditText.setText(currentTask.getTaskName());
+            checkBox.setChecked(currentTask.getIsCompleted() > 0);
             if (currentTask.getTaskTime() != null)
                 dateTextView.setText(currentTask.getTaskTime());
-            if (currentTask.getTaskDesc()!=null)
+            if (currentTask.getTaskDesc() != null)
                 descriptionEditText.setText(currentTask.getTaskDesc());
-            if (subTaskCheckedListSize <1)
+            if (subTaskAllListSize < 1)
                 subtaskHeader.setVisibility(View.GONE);
+            else
+                subtaskHeader.setVisibility(View.VISIBLE);
             subtaskCountTextView.setText(subTaskCheckedListSize + "/" + subTaskAllListSize);
+            taskDao.getAllSubTasksObservable(taskId).observe(this.getViewLifecycleOwner(), new Observer<List<SubTask>>() {
+                @Override
+                public void onChanged(List<SubTask> tasks) {
+                    updateRecyclerView();
+                }
+            });
         } catch (InterruptedException ignored) {
         }
         return rootView;
@@ -252,15 +362,39 @@ public class DetailsTaskFragment extends DialogFragment
     }
 
     public void updateRecyclerView() {
-        Context context = getContext();
-        new Thread(new Runnable() {
+        Context context = getContext().getApplicationContext();
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
             @Override
             public void run() {
                 subTaskList = MyDatabase.getDatabase(context).taskDao().getAllUncheckedSubTasks(taskId);
-                adapter = new RecyclerSubTaskListAdapter(context, subTaskList, recyclerView, MyDatabase.getDatabase(context).taskDao(),subtaskCountTextView, subTaskAllListSize );
-                recyclerView.setAdapter(adapter);
+                subCheckedTaskList = MyDatabase.getDatabase(context).taskDao().getAllCheckedSubTasks(taskId);
+                subTaskAllListSize = MyDatabase
+                        .getDatabase(context)
+                        .taskDao()
+                        .getAllSubTasks(taskId).size();
+                subTaskCheckedListSize = subTaskAllListSize - subTaskList.size();
             }
-        }).start();
+        });
+        executorService.shutdown();
+
+        try {
+            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            adapter = new RecyclerSubTaskListAdapter(context, subTaskList, recyclerView, MyDatabase.getDatabase(context).taskDao(), subtaskCountTextView, subTaskAllListSize);
+            checkedAdapter = new RecyclerSubTaskListAdapter(context, subCheckedTaskList, checkedRecView, MyDatabase.getDatabase(context).taskDao(), subtaskCountTextView, subTaskAllListSize);
+            recyclerView.setAdapter(adapter);
+            checkedRecView.setAdapter(checkedAdapter);
+            itemTouchHelper.attachToRecyclerView(recyclerView);
+            itemCheckedTouchHelper.attachToRecyclerView(checkedRecView);
+
+            subtaskCountTextView.setText(subTaskCheckedListSize + "/" + subTaskAllListSize);
+            int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);
+            if (recyclerView.getItemDecorationCount() < 1)
+                recyclerView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
+            if (checkedRecView.getItemDecorationCount() < 1)
+                checkedRecView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
+        } catch (InterruptedException ignored) {
+        }
     }
 
     public void addSubTask(int taskId, String subTaskName, String subTaskDescription, String subTaskTime) {
@@ -279,7 +413,7 @@ public class DetailsTaskFragment extends DialogFragment
                         insertSubTask(newSubTask);
                 subTaskList.add(newSubTask);
                 subTaskAllListSize++;
-                if (subTaskList.size()>0)
+                if (subTaskList.size() > 0)
                     subtaskHeader.setVisibility(View.VISIBLE);
                 subtaskCountTextView.setText(subTaskCheckedListSize + "/" + subTaskAllListSize);
             }
@@ -323,16 +457,26 @@ public class DetailsTaskFragment extends DialogFragment
     }
 
 
-
     @Override
     public void onStart() {
         super.onStart();
 
         // Задаем обработчик события нажатия на системную кнопку "Назад"
-
+        requireDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                    dismiss();
+                    return true;
+                }
+                return false;
+            }
+        });
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);
         if (recyclerView.getItemDecorationCount() < 1)
             recyclerView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
+        if (checkedRecView.getItemDecorationCount() < 1)
+            checkedRecView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
 //        adapter.notifyDataSetChanged();
     }
 
@@ -351,13 +495,14 @@ public class DetailsTaskFragment extends DialogFragment
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                MyDatabase.getDatabase(getContext().getApplicationContext()).taskDao().update(currentTask);
-                fragmentButtonClickListener.updateTaskRecView();
+                if (currentTask != null) {
+                    MyDatabase.getDatabase(getContext()).taskDao().update(currentTask);
+                    fragmentButtonClickListener.updateTaskRecView();
+                }
             }
         });
 
         dismiss();
-        getParentFragmentManager().beginTransaction().remove(getParentFragmentManager().findFragmentById(android.R.id.content)).commit();
 
     }
 

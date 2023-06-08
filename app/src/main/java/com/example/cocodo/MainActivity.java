@@ -1,5 +1,6 @@
 package com.example.cocodo;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -16,8 +17,10 @@ import android.widget.PopupWindow;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
@@ -27,7 +30,9 @@ import com.example.cocodo.ui.fragments.AddTaskFragment;
 import com.example.cocodo.ui.fragments.BackgroundFragment;
 import com.example.cocodo.ui.fragments.DetailsTaskFragment;
 import com.example.cocodo.ui.fragments.HeaderFragment;
+import com.example.cocodo.ui.fragments.HistoryFragment;
 import com.example.cocodo.ui.fragments.NavBarFragment;
+import com.example.cocodo.ui.fragments.ProductivityFragment;
 import com.example.cocodo.ui.fragments.TaskListFragment;
 import com.example.cocodo.utils.RecyclerTaskListAdapter;
 import com.example.cocodo.utils.SpacesItemDecoration;
@@ -35,6 +40,8 @@ import com.example.cocodo.utils.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 
 public class MainActivity
@@ -45,7 +52,10 @@ public class MainActivity
         NavBarFragment.OnFragmentButtonClickListener,
         TaskListFragment.UpdaterRecViewList,
         DetailsTaskFragment.OnFragmentButtonClickListener,
-        HeaderFragment.CharPieButtonClickListener {
+        HeaderFragment.CharPieButtonClickListener,
+        ProductivityFragment.HistoryButtonClickListener,
+        HistoryFragment.UpdaterRecViewList
+{
     static final Migration MIGRATION_4_5 = new Migration(4, 5) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
@@ -58,21 +68,35 @@ public class MainActivity
     private static List<Task> taskList = new ArrayList<>();
     String sharedText;
 
+    @Override
+    public void onBackPressed() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
 
-    public static void onTaskListItemClickListener(View view, int position) {
+        // ищем последний добавленный фрагмент в стек обратного вызова
+        Fragment lastFragment = fragmentManager.findFragmentById(android.R.id.content);
+
+        // если фрагмент существует и он не является корневым фрагментом,
+        // то закрываем его с помощью метода popBackStack()
+        if (lastFragment != null && fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStack();
+        } else {
+            // иначе вызываем стандартную обработку нажатия кнопки "назад"
+            super.onBackPressed();
+        }
+    }
+
+    public static void onTaskListItemClickListener(View view, Task task) {
         DetailsTaskFragment lastFragment = (DetailsTaskFragment) fragmentManager.findFragmentByTag("TaskDetailsFragment");
         if (lastFragment == null || !lastFragment.isAdded()) {
             Bundle bundle = new Bundle();
             DetailsTaskFragment fragment = new DetailsTaskFragment();
-            Task task = taskList.get(position);
             bundle.putInt("taskId", task.getId());
             fragment.setArguments(bundle);
 
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.setCustomAnimations(R.anim.fade_in, 0, 0, R.anim.fade_out);
-            transaction.add(android.R.id.content, new BackgroundFragment());
 
-            transaction.add(fragment, "TaskDetailsFragment").addToBackStack(null).commit();
+            fragment.show(fragmentManager, "TaskDetailsFragment");
+
+
         }
 
     }
@@ -92,11 +116,11 @@ public class MainActivity
         bundle.putBoolean("isSubTask", false);
         fragment.setArguments(bundle);
 
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setCustomAnimations(R.anim.fade_in, 0, 0, R.anim.fade_out);
-        transaction.add(android.R.id.content, new BackgroundFragment());
 
-        transaction.add(fragment, "AddTaskFragment").addToBackStack(null).commit();
+
+        fragment.show(fragmentManager, "AddTaskFragment");
+
+
     }
 
     @Override
@@ -108,13 +132,9 @@ public class MainActivity
         bundle.putInt("taskId", taskId);
         fragment.setArguments(bundle);
 
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setCustomAnimations(R.anim.fade_in, 0, 0, R.anim.fade_out);
-        // Показываем затемненный фон с помощью менеджера фрагментов
-        transaction.add(android.R.id.content, new BackgroundFragment());
-
         // Показываем фрагмент с помощью менеджера фрагментов
-        transaction.add(fragment, "AddTaskFragment").addToBackStack(null).commit();
+        fragment.show(fragmentManager, "AddTaskFragment");
+
     }
 
     @Override
@@ -192,24 +212,29 @@ public class MainActivity
         new LoadDataTask(this).execute();
     }
 
-    @Override
-    public void closeButtonClickListener() {
-        Intent shareIntent = new Intent();
-        shareIntent.setAction(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "Текст, который нужно передать");
-        startActivity(Intent.createChooser(shareIntent, "Поделиться через..."));
-    }
 
     @Override
     public void onCharPieButtonClick() {
+        ProductivityFragment fragment = new ProductivityFragment();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_from_right, 0, 0, R.anim.slide_to_right);
+        // Показываем фрагмент с помощью менеджера фрагментов
+        transaction.add(R.id.contentFragment,fragment, "ProductivityFragment").addToBackStack(null).commit();
+    }
 
+    @Override
+    public void onHistoryButtonClick() {
+        HistoryFragment fragment = new HistoryFragment();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_from_right, 0, 0, R.anim.slide_to_right);
+        transaction.add(R.id.contentFragment, fragment, "HistoryFragment").addToBackStack(null).commit();
     }
 
     private static class LoadDataTask extends AsyncTask<Void, Void, Void> {
 
         private final Context context;
         Task task;
+        ItemTouchHelper itemTouchHelper;
 
         public LoadDataTask(Context context, Task task) {
             this.context = context.getApplicationContext();
@@ -229,11 +254,11 @@ public class MainActivity
             } else {
                 MainActivity.taskList = MyDatabase.getDatabase(context).taskDao().getAllUncheckedTasksSortedByPriority();
                 adapter = null;
-//               for (Task t:taskList) {
-//                   MyDatabase.getDatabase(context).taskDao().deleteAllSubTasks();
-//                   MyDatabase.getDatabase(context).taskDao().deleteAllTasks();
+//              for (Task t:taskList) {
+//                  MyDatabase.getDatabase(context).taskDao().deleteAllSubTasks();
+//                  MyDatabase.getDatabase(context).taskDao().deleteAllTasks();
 //
-//               }
+//              }
             }
             return null;
         }
@@ -247,9 +272,41 @@ public class MainActivity
                 adapter.setOnItemClickListener(new RecyclerTaskListAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        onTaskListItemClickListener(view, position);
+                        onTaskListItemClickListener(view, taskList.get(position));
                     }
                 });
+                itemTouchHelper =
+                        new ItemTouchHelper(
+                                new ItemTouchHelper.SimpleCallback(
+                                        0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+                                    @Override
+                                    public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                                        return false;
+                                    }
+
+                                    @Override
+                                    public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                                        int swipedTaskPosition = viewHolder.getAdapterPosition();
+                                        Task swipedTask = taskList.get(swipedTaskPosition);
+
+                                        Executor executor = Executors.newSingleThreadExecutor();
+                                        executor.execute(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                MyDatabase.getDatabase(context).taskDao().deleteTask(swipedTask);
+                                                // обновляем список на основном потоке
+                                                ((Activity)context).runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        taskList.remove(swipedTaskPosition);
+                                                        adapter.notifyItemRemoved(swipedTaskPosition);
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                itemTouchHelper.attachToRecyclerView(recyclerView);
             } else {
                 MainActivity.adapter.notifyDataSetChanged();
             }

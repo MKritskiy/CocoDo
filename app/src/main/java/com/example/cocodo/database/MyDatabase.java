@@ -11,6 +11,7 @@ import androidx.room.TypeConverters;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.example.cocodo.ui.fragments.DetailsTaskFragment;
 import com.example.cocodo.utils.Converters;
 import com.example.cocodo.utils.SubTask;
 import com.example.cocodo.utils.Task;
@@ -42,4 +43,7 @@ public abstract class MyDatabase extends RoomDatabase {
         }
         return INSTANCE;
     }
+
+    // Слушатель изменения базы данных
+
 }

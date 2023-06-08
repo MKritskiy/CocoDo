@@ -104,7 +104,8 @@ public class RecyclerTaskListAdapter extends RecyclerView.Adapter<RecyclerTaskLi
                     if (task.equals(currentTask)) {
                         completeTask(pos, task, holder, isChecked);
                     }
-                }
+                } else
+                    updateTask(currentTask);
             }
         };
     }

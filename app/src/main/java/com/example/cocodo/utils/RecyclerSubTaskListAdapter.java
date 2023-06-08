@@ -52,6 +52,7 @@ public class RecyclerSubTaskListAdapter extends RecyclerView.Adapter<RecyclerSub
         this.mContext = context;
         this.subTaskList = subTaskList;
         this.textView = textView;
+        Log.d("TAG", String.valueOf(allTaskCount));
         subTaskAllListSize = allTaskCount;
         subTaskCheckedListSize = subTaskAllListSize- subTaskList.size();
 
@@ -109,7 +110,8 @@ public class RecyclerSubTaskListAdapter extends RecyclerView.Adapter<RecyclerSub
                     if (task.equals(currentTask)) {
                         completeTask(pos, task, holder, isChecked);
                     }
-                }
+                } else
+                    updateTask(currentTask);
             }
         };
     }

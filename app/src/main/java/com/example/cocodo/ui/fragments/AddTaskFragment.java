@@ -153,7 +153,6 @@ public class AddTaskFragment
         super.onPause();
 
         dismiss();
-        getParentFragmentManager().beginTransaction().remove(getParentFragmentManager().findFragmentById(android.R.id.content)).commit();
 
     }
 

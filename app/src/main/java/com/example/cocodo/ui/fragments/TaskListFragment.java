@@ -16,7 +16,6 @@ import com.example.cocodo.R;
 public class TaskListFragment extends Fragment {
     public interface UpdaterRecViewList{
         void updateTaskRecView();
-        void closeButtonClickListener();
     }
     private TaskListFragment.UpdaterRecViewList updaterRecViewList;
     @Override
@@ -34,13 +33,7 @@ public class TaskListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.task_list_fragment, container, false);
-        Button closeButton = view.findViewById(R.id.closeButton);
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                updaterRecViewList.closeButtonClickListener();
-            }
-        });
+
         return view;
     }
 

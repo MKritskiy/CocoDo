@@ -14,7 +14,7 @@
         android:paddingVertical="28dp">
 
         <ImageButton
-            android:id="@+id/imageButton"
+            android:id="@+id/productivity_back_image_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="#00FFFFFF"
@@ -24,7 +24,7 @@
             app:srcCompat="@drawable/back_arrow" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/history_header_text_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -33,22 +33,13 @@
             android:textColor="@color/black"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageButton2"
-            app:layout_constraintStart_toEndOf="@+id/imageButton"
+            app:layout_constraintStart_toEndOf="@+id/productivity_back_image_button"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/imageButton2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/parameters_icon" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/history_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp">
@@ -128,7 +119,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/unstopable_counter"
+            android:id="@+id/unstoppable_counter"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -141,7 +132,7 @@
             app:layout_constraintTop_toBottomOf="@+id/unstopable_header" />
 
         <TextView
-            android:id="@+id/unstopable_dates"
+            android:id="@+id/unstoppable_dates"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -151,7 +142,7 @@
             android:textSize="13sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/unstopable_counter" />
+            app:layout_constraintTop_toBottomOf="@+id/unstoppable_counter" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View

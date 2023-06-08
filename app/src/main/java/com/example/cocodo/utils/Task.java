@@ -1,13 +1,11 @@
 package com.example.cocodo.utils;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
-import androidx.room.Relation;
 import androidx.room.TypeConverters;
 
 import java.sql.Date;
-import java.util.List;
 
 @Entity(tableName = "tasks")
 public class Task {
@@ -32,6 +30,7 @@ public class Task {
     @ColumnInfo(name = "completed_at")
     @TypeConverters(Converters.class)
     private Date completedAt;
+
     public Task(String taskName, String taskDesc, String taskTime) {
         this.taskName = taskName;
         this.taskDesc = taskDesc;
@@ -45,7 +44,9 @@ public class Task {
         return id;
     }
 
-    public void setId(int id) { this.id = id; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getTaskName() {
         return taskName;
@@ -84,6 +85,10 @@ public class Task {
     }
 
     public void setIsCompleted(int isCompleted) {
+        if (isCompleted == 1)
+            this.setCompletedAt(new Date(System.currentTimeMillis()));
+        else
+            this.setCompletedAt(null);
         this.isCompleted = isCompleted;
     }
 
