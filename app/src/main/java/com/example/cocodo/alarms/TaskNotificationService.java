@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class TaskNotificationService extends Service {
     private static final String TAG = TaskNotificationService.class.getSimpleName();
     private static final long INTERVAL_MINUTES = 1;
-    private static final long INTERVAL_MS = INTERVAL_MINUTES * 60 * 5000;
+    private static final long INTERVAL_MS = INTERVAL_MINUTES * 60 * 500;
     String channelId;
     List<Task> tasksDueWithin24Hours;
     private Handler mHandler = new Handler();

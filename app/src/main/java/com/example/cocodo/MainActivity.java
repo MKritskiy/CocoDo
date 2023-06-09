@@ -205,15 +205,17 @@ public class MainActivity
     @Override
     public void sendTaskButtonClick(String taskName, String taskDesc, String taskTime, int taskPriority) {
         recyclerView = findViewById(R.id.taskRecyclerList);
-        long taskTimeLong;
-        DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm", new Locale("ru"));
-        df.setTimeZone(TimeZone.getTimeZone("UTC"));
-        try {
-            java.util.Date utilDate = df.parse(taskTime.replace(".", ""));
-            taskTimeLong = new java.sql.Date(utilDate.getTime()).getTime();
-        } catch (ParseException e) {
-            e.printStackTrace();
-            taskTimeLong = new java.sql.Date(0).getTime();
+        long taskTimeLong = 0;
+        if (taskTime!=null) {
+            DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm", new Locale("ru"));
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+            try {
+                java.util.Date utilDate = df.parse(taskTime.replace(".", ""));
+                taskTimeLong = new java.sql.Date(utilDate.getTime()).getTime();
+            } catch (ParseException e) {
+                e.printStackTrace();
+                taskTimeLong = new java.sql.Date(0).getTime();
+            }
         }
         new LoadDataTask(this, new Task(taskName, taskDesc, taskTimeLong, taskPriority)).execute();
     }

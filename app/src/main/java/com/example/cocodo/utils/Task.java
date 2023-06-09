@@ -63,6 +63,7 @@ public class Task {
     }
 
     public String getTaskDesc() {
+
         return taskDesc;
     }
 
@@ -71,6 +72,8 @@ public class Task {
     }
 
     public String getTaskTimeInString() {
+        if (taskTime==0)
+            return "";
         Date date = new Date(taskTime);
         DateFormat df = new SimpleDateFormat("dd MMM. yyyy HH:mm", new Locale("ru"));
         String dateString = df.format(date);
